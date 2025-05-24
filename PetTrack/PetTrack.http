@@ -1,0 +1,6 @@
+@PetTrack_HostAddress = http://localhost:5195
+
+GET {{PetTrack_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

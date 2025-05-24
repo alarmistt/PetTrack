@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="FirebaseAdmin" Version="3.0.0" />
+		<PackageReference Include="Google.Apis.Auth" Version="1.69.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <ProjectReference Include="..\PetTrack.Contract.Repositories\PetTrack.Contract.Repositories.csproj" />
+	  <ProjectReference Include="..\PetTrack.Contract.Services\PetTrack.Contract.Services.csproj" />
+	  <ProjectReference Include="..\PetTrack.Core\PetTrack.Core.csproj" />
+	  <ProjectReference Include="..\PetTrack.Entity\PetTrack.Entity.csproj" />
+	  <ProjectReference Include="..\PetTrack.ModelViews\PetTrack.ModelViews.csproj" />
+	  <ProjectReference Include="..\PetTrack.Repositories\PetTrack.Repositories.csproj" />
+	</ItemGroup>
+	
+</Project>
