@@ -1,11 +1,18 @@
 ﻿using FirebaseAdmin.Auth;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using PetTrack.Contract.Repositories.Interfaces;
 using PetTrack.Contract.Services.Interfaces;
 using PetTrack.Core.Config;
+using PetTrack.Core.Constants;
 using PetTrack.Core.Enums;
+using PetTrack.Core.Exceptions;
+using PetTrack.Core.Helpers;
+using PetTrack.Core.Models;
 using PetTrack.Entity;
 using PetTrack.ModelViews.AuthenticationModels;
+using PetTrack.ModelViews.Mappers;
+using PetTrack.ModelViews.UserModels;
 using PetTrack.Services.Infrastructure;
 
 namespace PetTrack.Services.Services
@@ -15,12 +22,87 @@ namespace PetTrack.Services.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly JwtSettings _jwtSettings;
         private readonly JwtTokenGenerator _tokenGenerator;
+        private readonly IUserContextService _userContextService;
 
-        public AuthenticationService(IUnitOfWork unitOfWork, JwtSettings jwtSettings, JwtTokenGenerator tokenGenerator)
+        public AuthenticationService(IUnitOfWork unitOfWork, JwtSettings jwtSettings, JwtTokenGenerator tokenGenerator, IUserContextService userContextService)
         {
             _unitOfWork = unitOfWork;
             _jwtSettings = jwtSettings;
             _tokenGenerator = tokenGenerator;
+            _userContextService = userContextService;
+        }
+
+        public async Task<BasePaginatedList<UserResponseModel>> GetPagedUsers(UserQueryObject query)
+        {
+            var usersQuery = _unitOfWork.GetRepository<User>().Entities
+                           .AsNoTracking()
+                           .Where(u => u.DeletedTime == null);
+
+            if (!string.IsNullOrWhiteSpace(query.Id))
+                usersQuery = usersQuery.Where(u => u.Id == query.Id);
+
+            if (!string.IsNullOrWhiteSpace(query.FullName))
+                usersQuery = usersQuery.Where(u => u.FullName.Contains(query.FullName));
+
+            if (!string.IsNullOrWhiteSpace(query.Email))
+                usersQuery = usersQuery.Where(u => u.Email.Contains(query.Email));
+
+            if (!string.IsNullOrWhiteSpace(query.PhoneNumber))
+                usersQuery = usersQuery.Where(u => u.PhoneNumber!.Contains(query.PhoneNumber));
+
+            if (query.Role.HasValue)
+                usersQuery = usersQuery.Where(u => u.Role == query.Role.Value.ToString());
+
+
+            // Sorting logic
+            if (!string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                usersQuery = query.SortBy.ToLower() switch
+                {
+                    "fullname" => query.IsDescending
+                        ? usersQuery.OrderByDescending(u => u.FullName)
+                        : usersQuery.OrderBy(u => u.FullName),
+
+                    "email" => query.IsDescending
+                        ? usersQuery.OrderByDescending(u => u.Email)
+                        : usersQuery.OrderBy(u => u.Email),
+
+                    _ => usersQuery.OrderByDescending(u => u.CreatedTime)
+                };
+            }
+            else
+            {
+                usersQuery = usersQuery.OrderByDescending(u => u.CreatedTime);
+            }
+
+            // Paging
+            int total = await usersQuery.CountAsync();
+
+            var pagedUsers = await usersQuery
+                .Skip((query.PageIndex - 1) * query.PageSize)
+                .Take(query.PageSize)
+                .ToListAsync();
+
+            var result = pagedUsers.ToListUserDto();
+
+            return new BasePaginatedList<UserResponseModel>(result, total, query.PageIndex, query.PageSize);
+        }
+
+        public async Task<UserResponseModel> GetUserById(string id)
+        {
+            User user = await _unitOfWork.GetRepository<User>().Entities.FirstOrDefaultAsync(u => u.Id == id && !u.DeletedTime.HasValue) ??
+                throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstants.BADREQUEST, "User not found");
+
+            return user.ToUserDto();
+        }
+
+        public async Task<UserResponseModel> GetUserInfo()
+        {
+            string userId = _userContextService.GetUserId();
+            User user = await _unitOfWork.GetRepository<User>().Entities.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId)
+                ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstants.BADREQUEST, "User not found");
+
+            return user.ToUserDto();
         }
 
         public async Task<AuthenticationModel> Login(GoogleLoginRequest request)
@@ -45,6 +127,54 @@ namespace PetTrack.Services.Services
             }
 
             return await _tokenGenerator.CreateToken(user, _jwtSettings);
+        }
+
+        public async Task<UserResponseModel> UpdateUserAsync(string id, UpdateUserRequest request)
+        {
+            User user = await _unitOfWork.GetRepository<User>().Entities
+                .FirstOrDefaultAsync(u => u.Id == id && !u.DeletedTime.HasValue)
+                ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "User not found");
+
+            user.FullName = request.FullName;
+            user.Address = request.Address;
+            user.PhoneNumber = request.PhoneNumber;
+            user.AvatarUrl = request.AvatarUrl;
+            user.LastUpdatedTime = CoreHelper.SystemTimeNow;
+
+            await _unitOfWork.GetRepository<User>().UpdateAsync(user);
+            await _unitOfWork.SaveAsync();
+
+            return user.ToUserDto();
+        }
+
+        public async Task DeleteUserAsync(string id)
+        {
+            User user = await _unitOfWork.GetRepository<User>().Entities
+                .FirstOrDefaultAsync(u => u.Id == id && !u.DeletedTime.HasValue)
+                ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "User not found");
+
+            user.DeletedTime = CoreHelper.SystemTimeNow;
+
+            await _unitOfWork.GetRepository<User>().UpdateAsync(user);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task<UserResponseModel> UpdateUserRoleAsync(string userId, UserRole newRole)
+        {
+            if (newRole == UserRole.Admin)
+                throw new ErrorException(StatusCodes.Status403Forbidden, "FORBIDDEN", "You cannot assign Admin role via this API.");
+
+            var user = await _unitOfWork.GetRepository<User>().Entities
+                .FirstOrDefaultAsync(u => u.Id == userId && !u.DeletedTime.HasValue)
+                ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "User not found");
+
+            user.Role = newRole.ToString();
+            user.LastUpdatedTime = CoreHelper.SystemTimeNow;
+
+            await _unitOfWork.GetRepository<User>().UpdateAsync(user);
+            await _unitOfWork.SaveAsync();
+
+            return user.ToUserDto();
         }
     }
 }
