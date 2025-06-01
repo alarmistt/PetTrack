@@ -96,10 +96,61 @@ namespace PetTrack.DI
                     OnChallenge = context =>
                     {
                         context.HandleResponse();
-                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                        context.Response.ContentType = "application/json";
-                        var result = new { message = "You do not have permission!" };
-                        return context.Response.WriteAsync(JsonConvert.SerializeObject(result));
+
+                        if (!context.Response.HasStarted)
+                        {
+                            context.Response.ContentType = "application/json";
+
+                            if (!context.Request.Headers.ContainsKey("Authorization"))
+                            {
+                                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                                return context.Response.WriteAsync(JsonConvert.SerializeObject(new { message = "Token is missing!" }));
+                            }
+
+                            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                            return context.Response.WriteAsync(JsonConvert.SerializeObject(new { message = "You do not have permission!" }));
+                        }
+
+                        return Task.CompletedTask;
+                    },
+
+                    OnAuthenticationFailed = context =>
+                    {
+                        if (!context.Response.HasStarted)
+                        {
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            context.Response.ContentType = "application/json";
+
+                            string errorMessage;
+
+                            if (context.Exception is SecurityTokenExpiredException)
+                            {
+                                errorMessage = "Token has expired!";
+                            }
+                            else
+                            {
+                                errorMessage = "Token is invalid";
+                            }
+
+                            var result = JsonConvert.SerializeObject(new { message = errorMessage });
+                            return context.Response.WriteAsync(result);
+                        }
+
+                        return Task.CompletedTask;
+                    },
+
+                    OnForbidden = context =>
+                    {
+                        if (!context.Response.HasStarted)
+                        {
+                            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                            context.Response.ContentType = "application/json";
+
+                            var result = JsonConvert.SerializeObject(new { message = "You do not have permission to access this resource!" });
+                            return context.Response.WriteAsync(result);
+                        }
+
+                        return Task.CompletedTask;
                     }
                 };
             });
@@ -144,6 +195,8 @@ namespace PetTrack.DI
                     Title = "API"
 
                 });
+
+                c.SchemaFilter<EnumSchemaFilter>();
 
                 // Thêm JWT Bearer Token vào Swagger
                 c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme

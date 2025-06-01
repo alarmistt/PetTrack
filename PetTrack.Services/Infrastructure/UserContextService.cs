@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
+using PetTrack.Contract.Services.Interfaces;
 using PetTrack.Core.Exceptions;
 
 namespace PetTrack.Services.Infrastructure
 {
-    public interface IUserContextService
-    {
-        string GetUserId();
-        string? GetUserRole();
-    }
-
     public class UserContextService : IUserContextService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
