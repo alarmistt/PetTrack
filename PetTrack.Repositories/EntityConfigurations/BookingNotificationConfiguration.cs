@@ -14,15 +14,13 @@ namespace PetTrack.Repositories.EntityConfigurations
 
             builder.Property(x => x.Type).IsRequired().HasMaxLength(50);
 
-            builder.Property(x => x.Channel).IsRequired().HasMaxLength(50);
+            builder.Property(x => x.Subject).IsRequired().HasMaxLength(50);
 
-            builder.Property(x => x.Status).IsRequired().HasMaxLength(50);
 
             builder.Property(x => x.Content).HasMaxLength(2000);
 
             builder.HasIndex(x => x.UserId);
             builder.HasIndex(x => x.BookingId);
-            builder.HasIndex(x => x.Status);
 
             builder.HasOne(x => x.Booking).WithMany(b => b.Notifications).HasForeignKey(x => x.BookingId);
             builder.HasOne(x => x.User).WithMany(u => u.Notifications).HasForeignKey(x => x.UserId);

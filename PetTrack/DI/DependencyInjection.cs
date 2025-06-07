@@ -11,6 +11,8 @@ using PetTrack.Repositories.Base;
 using PetTrack.Repositories.SeedData;
 using System.Text;
 using PetTrack.Core.Helpers;
+using PetTrack.Core.Models;
+using PetTrack.Services.Services;
 
 namespace PetTrack.DI
 {
@@ -25,6 +27,7 @@ namespace PetTrack.DI
             services.ConfigCors();
             services.InitSeedData();
             services.AddFirebase();
+            services.ConfigPayOs(configuration);
         }
         public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {
@@ -32,6 +35,12 @@ namespace PetTrack.DI
             {
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             });
+        }
+        public static void ConfigPayOs(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<PayOSOptions>(
+                    configuration.GetSection("PayOS"));
+            services.AddHttpClient<PayOSService>();
         }
 
         public static void AddFirebase(this IServiceCollection services)

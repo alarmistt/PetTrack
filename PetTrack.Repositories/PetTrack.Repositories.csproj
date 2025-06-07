@@ -22,10 +22,6 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\PetTrack.Contract.Repositories\PetTrack.Contract.Repositories.csproj" />
     <ProjectReference Include="..\PetTrack.Entity\PetTrack.Entity.csproj" />
   </ItemGroup>
