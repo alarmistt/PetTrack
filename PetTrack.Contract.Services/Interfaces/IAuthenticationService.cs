@@ -17,5 +17,6 @@ namespace PetTrack.Contract.Services.Interfaces
         Task DeleteUserAsync(string id);
         // Admin-only: update role
         Task<UserResponseModel> UpdateUserRoleAsync(string userId, UserRole newRole);
+        Task UpdateRoleClinicAsync(string userId);
     }
 }

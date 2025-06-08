@@ -8,10 +8,10 @@ namespace PetTrack.Repositories.Base
     {
         public PetTrackDbContext(DbContextOptions<PetTrackDbContext> options) : base(options)
         {
-            this.Database.Migrate();
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<BankAccount> BankAccounts { get; set; }
         public DbSet<Clinic> Clinics { get; set; }
         public DbSet<ClinicSchedule> ClinicSchedules { get; set; }
         public DbSet<ServicePackage> ServicePackages { get; set; }
@@ -24,7 +24,7 @@ namespace PetTrack.Repositories.Base
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(PetTrackDbContext).Assembly); // Fluent API
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(PetTrackDbContext).Assembly); // Fluent API Configuration
         }
     }
 }
