@@ -23,13 +23,15 @@ namespace PetTrack.Services.Services
         private readonly JwtSettings _jwtSettings;
         private readonly JwtTokenGenerator _tokenGenerator;
         private readonly IUserContextService _userContextService;
+        private readonly IWalletService _walletService;
 
-        public AuthenticationService(IUnitOfWork unitOfWork, JwtSettings jwtSettings, JwtTokenGenerator tokenGenerator, IUserContextService userContextService)
+        public AuthenticationService(IUnitOfWork unitOfWork, JwtSettings jwtSettings, JwtTokenGenerator tokenGenerator, IUserContextService userContextService, IWalletService walletService)
         {
             _unitOfWork = unitOfWork;
             _jwtSettings = jwtSettings;
             _tokenGenerator = tokenGenerator;
             _userContextService = userContextService;
+            _walletService = walletService;
         }
 
         public async Task<BasePaginatedList<UserResponseModel>> GetPagedUsers(UserQueryObject query)
@@ -91,7 +93,7 @@ namespace PetTrack.Services.Services
         public async Task<UserResponseModel> GetUserById(string id)
         {
             User user = await _unitOfWork.GetRepository<User>().Entities.FirstOrDefaultAsync(u => u.Id == id && !u.DeletedTime.HasValue) ??
-                throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstants.BADREQUEST, "User not found");
+                throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "User not found");
 
             return user.ToUserDto();
         }
@@ -100,7 +102,7 @@ namespace PetTrack.Services.Services
         {
             string userId = _userContextService.GetUserId();
             User user = await _unitOfWork.GetRepository<User>().Entities.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId)
-                ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstants.BADREQUEST, "User not found");
+                ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "User not found");
 
             return user.ToUserDto();
         }
@@ -125,6 +127,8 @@ namespace PetTrack.Services.Services
                 await userRepo.InsertAsync(user);
                 await _unitOfWork.SaveAsync();
             }
+
+            await _walletService.CreateWalletIfNotExistsAsync(user.Id);
 
             return await _tokenGenerator.CreateToken(user, _jwtSettings);
         }
@@ -175,6 +179,19 @@ namespace PetTrack.Services.Services
             await _unitOfWork.SaveAsync();
 
             return user.ToUserDto();
+        }
+
+        public async Task UpdateRoleClinicAsync(string userId)
+        {
+            var user = await _unitOfWork.GetRepository<User>().Entities
+                .FirstOrDefaultAsync(u => u.Id == userId && !u.DeletedTime.HasValue)
+                ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "User not found");
+
+            user.Role = UserRole.Clinic.ToString();
+            user.LastUpdatedTime = CoreHelper.SystemTimeNow;
+
+            await _unitOfWork.GetRepository<User>().UpdateAsync(user);
+            await _unitOfWork.SaveAsync();
         }
     }
 }
