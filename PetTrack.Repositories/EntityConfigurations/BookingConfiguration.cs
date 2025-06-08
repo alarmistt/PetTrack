@@ -21,7 +21,7 @@ namespace PetTrack.Repositories.EntityConfigurations
             builder.Property(x => x.ClinicReceiveAmount).HasColumnType("decimal(18,2)");
 
             builder.HasIndex(x => x.UserId);
-            builder.HasIndex(x => x.BookingTime);
+            builder.HasIndex(x => x.AppointmentDate);
             builder.HasIndex(x => x.Status);
 
             builder.HasOne(x => x.User)

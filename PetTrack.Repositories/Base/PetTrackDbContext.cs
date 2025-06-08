@@ -8,6 +8,7 @@ namespace PetTrack.Repositories.Base
     {
         public PetTrackDbContext(DbContextOptions<PetTrackDbContext> options) : base(options)
         {
+            this.Database.Migrate();
         }
 
         public DbSet<User> Users { get; set; }
@@ -15,7 +16,6 @@ namespace PetTrack.Repositories.Base
         public DbSet<ClinicSchedule> ClinicSchedules { get; set; }
         public DbSet<ServicePackage> ServicePackages { get; set; }
         public DbSet<Booking> Bookings { get; set; }
-        public DbSet<BookingStatusHistory> BookingStatusHistories { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
         public DbSet<WalletTransaction> WalletTransactions { get; set; }
         public DbSet<TopUpTransaction> TopUpTransactions { get; set; }

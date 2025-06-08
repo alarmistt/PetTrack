@@ -13,14 +13,11 @@ namespace PetTrack.Entity
         public string ServicePackageId { get; set; }
         public ServicePackage ServicePackage { get; set; }
 
-        public DateTime BookingTime { get; set; }
+        public DateTimeOffset AppointmentDate { get; set; }
         public string Status { get; set; }  // [Pending, Paid, InProgress, Confirmed, Completed (cronjob nếu đã qua booking-time và status == confirmed -> completed), Cancelled, Refunded]
-
         public decimal? Price { get; set; }
         public decimal? PlatformFee { get; set; }
         public decimal? ClinicReceiveAmount { get; set; }
-
-        public ICollection<BookingStatusHistory> StatusHistories { get; set; }
         public ICollection<WalletTransaction> Transactions { get; set; }
         public ICollection<BookingNotification> Notifications { get; set; }
     }
