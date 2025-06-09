@@ -34,7 +34,7 @@ namespace PetTrack.Services
             services.AddScoped<IDomainHelperService, DomainHelperService>();
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<JwtTokenGenerator>();
-
+            services.AddScoped<IPaymentService, PaymentService>();
         }
          private static void AddAutoMapper(this IServiceCollection services)
         {

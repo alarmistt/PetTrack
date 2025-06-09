@@ -13,6 +13,8 @@ using System.Text;
 using PetTrack.Core.Helpers;
 using PetTrack.Core.Models;
 using PetTrack.Services.Services;
+using System;
+using Net.payOS;
 
 namespace PetTrack.DI
 {
@@ -27,22 +29,23 @@ namespace PetTrack.DI
             services.ConfigCors();
             services.InitSeedData();
             services.AddFirebase();
-            services.ConfigPayOs(configuration);
+            services.AddPayOS(configuration);
         }
         public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<PetTrackDbContext>(options =>
             {
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+                options.UseMySql(configuration.GetConnectionString("DefaultConnection")
+                    , new MySqlServerVersion(new Version(9, 3, 0)));
             });
         }
-        public static void ConfigPayOs(this IServiceCollection services, IConfiguration configuration)
+        public static void AddPayOS(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<PayOSOptions>(
-                    configuration.GetSection("PayOS"));
-            services.AddHttpClient<PayOSService>();
+            PayOS payOS = new PayOS(configuration["PayOS:ClientId"] ?? throw new Exception("Cannot find payment environment"),
+                    configuration["PayOS:ApiKey"] ?? throw new Exception("Cannot find payment environment"),
+                    configuration["PayOS:ChecksumKey"] ?? throw new Exception("Cannot find payment environment"));
+            services.AddSingleton(payOS);
         }
-
         public static void AddFirebase(this IServiceCollection services)
         {
             string credentialPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "firebase-sdk.json");

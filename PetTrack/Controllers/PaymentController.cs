@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Net.payOS.Types;
+using PetTrack.Contract.Services.Interfaces;
+using PetTrack.Core.Models;
+using PetTrack.Entity;
+using PetTrack.ModelViews.Booking;
 using PetTrack.ModelViews.Payment;
-using PetTrack.Services.Services;
 
 
 namespace PetTrack.Controllers
@@ -9,26 +13,19 @@ namespace PetTrack.Controllers
     [Route("api/[controller]")]
     public class PaymentController : ControllerBase
     {
-        private readonly PayOSService _payOSService;
-
-        public PaymentController(PayOSService payOSService)
+        private readonly IPaymentService _paymenService;
+        public PaymentController(IPaymentService paymentService)
         {
-            _payOSService = payOSService;
+            _paymenService = paymentService;
+        }
+        [HttpPost("create-payment-intent")]
+        public async Task<IActionResult> CreatePaymentIntent([FromBody] CreatePaymentLinkRequest request)
+
+        {
+            var paymentIntent = await _paymenService.CreateLinkAsync(request);
+            return Ok(BaseResponseModel<CreatePaymentResult>.OkDataResponse(paymentIntent, "Get data successful"));
         }
 
-        [HttpPost("create-payment")]
-        public async Task<IActionResult> CreatePayment([FromBody] PaymentRequestModel model)
-        {
-            try
-            {
-                var url = await _payOSService.CreatePaymentLinkAsync(model.Amount, model.Description, model.ReturnUrl);
-                return Ok(new { checkoutUrl = url });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
-        }
     }
 
 }
