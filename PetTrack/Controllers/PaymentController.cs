@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Net.payOS.Types;
+using PetTrack.Contract.Services.Interfaces;
+using PetTrack.Core.Models;
+using PetTrack.Entity;
+using PetTrack.ModelViews.Booking;
 using PetTrack.ModelViews.Payment;
-using PetTrack.Services.Services;
 
 
 namespace PetTrack.Controllers
@@ -9,26 +13,38 @@ namespace PetTrack.Controllers
     [Route("api/[controller]")]
     public class PaymentController : ControllerBase
     {
-        private readonly PayOSService _payOSService;
-
-        public PaymentController(PayOSService payOSService)
+        private readonly IPaymentService _paymenService;
+        private readonly ITopUpTransactionService _topUpTransactionService;
+        public PaymentController(IPaymentService paymentService, ITopUpTransactionService topUpTransactionService)
         {
-            _payOSService = payOSService;
+            _paymenService = paymentService;
+            _topUpTransactionService = topUpTransactionService;
         }
+        [HttpPost("create-payment-intent")]
+        public async Task<IActionResult> CreatePaymentIntent([FromBody] CreatePaymentLinkRequest request)
 
-        [HttpPost("create-payment")]
-        public async Task<IActionResult> CreatePayment([FromBody] PaymentRequestModel model)
         {
+            var paymentIntent = await _paymenService.CreateLinkAsync(request);
+            return Ok(BaseResponseModel<CreatePaymentResult>.OkDataResponse(paymentIntent, "Get data successful"));
+        }
+        [HttpPost("check-status-transaction")]
+        public async Task<IActionResult> CheckStatusTransaction([FromBody] string orderCode)
+        {
+            if (string.IsNullOrEmpty(orderCode))
+            {
+                return BadRequest(BaseResponseModel<string>.BadRequestResponseModel("Transaction code is required"));
+            }
             try
             {
-                var url = await _payOSService.CreatePaymentLinkAsync(model.Amount, model.Description, model.ReturnUrl);
-                return Ok(new { checkoutUrl = url });
+                await _topUpTransactionService.CheckStatusTransactionAsync(orderCode);
+                return Ok(BaseResponseModel<string>.OkMessageResponseModel("Transaction status checked successfully"));
             }
             catch (Exception ex)
             {
-                return BadRequest(new { error = ex.Message });
+                return StatusCode(500, BaseResponseModel<string>.InternalErrorResponseModel($"An error occurred: {ex.Message}"));
             }
         }
+
     }
 
 }
