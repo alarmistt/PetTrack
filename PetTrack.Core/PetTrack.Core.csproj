@@ -19,7 +19,6 @@
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="payOS" Version="1.0.9" />
-		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="8.0.0" />
 	</ItemGroup>
 

@@ -9,5 +9,6 @@ namespace PetTrack.Contract.Services.Interfaces
         Task<WalletResponse> UpdateBalanceAsync(string walletId, UpdateWalletRequest request);
         Task<WalletResponse> GetWalletByIdAsync(string walletId);
         Task<WalletResponse> GetMyWalletAsync();
+        Task AddBalanceAsync(string walletId, decimal amount);
     }
 }

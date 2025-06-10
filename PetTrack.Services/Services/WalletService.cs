@@ -110,5 +110,21 @@ namespace PetTrack.Services.Services
 
             return wallet.ToWalletDto();
         }
+        public async Task AddBalanceAsync(string walletId, decimal amount)
+        {
+            var wallet = await _unitOfWork.GetRepository<Wallet>().GetByIdAsync(walletId)
+                ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "Wallet not found");
+
+            if (wallet.DeletedTime.HasValue)
+            {
+                throw new ErrorException(StatusCodes.Status409Conflict, ResponseCodeConstants.FAILED, "Wallet has already deleted");
+            }
+
+            wallet.Balance += amount;
+            wallet.LastUpdatedTime = CoreHelper.SystemTimeNow;
+
+            await _unitOfWork.GetRepository<Wallet>().UpdateAsync(wallet);
+            await _unitOfWork.SaveAsync();
+        }
     }
 }

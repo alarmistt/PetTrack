@@ -17,8 +17,7 @@ namespace PetTrack.Repositories.Base
             var connectionString = configuration.GetConnectionString("DefaultConnection");
 
             var optionsBuilder = new DbContextOptionsBuilder<PetTrackDbContext>();
-            optionsBuilder.UseMySql(configuration.GetConnectionString("DefaultConnection")
-                    , new MySqlServerVersion(new Version(9, 3, 0)));
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
 
             return new PetTrackDbContext(optionsBuilder.Options);
         }

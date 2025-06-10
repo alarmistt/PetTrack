@@ -35,8 +35,7 @@ namespace PetTrack.DI
         {
             services.AddDbContext<PetTrackDbContext>(options =>
             {
-                options.UseMySql(configuration.GetConnectionString("DefaultConnection")
-                    , new MySqlServerVersion(new Version(9, 3, 0)));
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             });
         }
         public static void AddPayOS(this IServiceCollection services, IConfiguration configuration)

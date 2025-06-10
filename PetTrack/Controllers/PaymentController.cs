@@ -14,9 +14,11 @@ namespace PetTrack.Controllers
     public class PaymentController : ControllerBase
     {
         private readonly IPaymentService _paymenService;
-        public PaymentController(IPaymentService paymentService)
+        private readonly ITopUpTransactionService _topUpTransactionService;
+        public PaymentController(IPaymentService paymentService, ITopUpTransactionService topUpTransactionService)
         {
             _paymenService = paymentService;
+            _topUpTransactionService = topUpTransactionService;
         }
         [HttpPost("create-payment-intent")]
         public async Task<IActionResult> CreatePaymentIntent([FromBody] CreatePaymentLinkRequest request)
@@ -24,6 +26,23 @@ namespace PetTrack.Controllers
         {
             var paymentIntent = await _paymenService.CreateLinkAsync(request);
             return Ok(BaseResponseModel<CreatePaymentResult>.OkDataResponse(paymentIntent, "Get data successful"));
+        }
+        [HttpPost("check-status-transaction")]
+        public async Task<IActionResult> CheckStatusTransaction([FromBody] string orderCode)
+        {
+            if (string.IsNullOrEmpty(orderCode))
+            {
+                return BadRequest(BaseResponseModel<string>.BadRequestResponseModel("Transaction code is required"));
+            }
+            try
+            {
+                await _topUpTransactionService.CheckStatusTransactionAsync(orderCode);
+                return Ok(BaseResponseModel<string>.OkMessageResponseModel("Transaction status checked successfully"));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, BaseResponseModel<string>.InternalErrorResponseModel($"An error occurred: {ex.Message}"));
+            }
         }
 
     }

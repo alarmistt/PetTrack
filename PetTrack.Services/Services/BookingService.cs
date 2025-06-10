@@ -7,7 +7,6 @@ using PetTrack.Core.Enums;
 using PetTrack.Core.Helpers;
 using PetTrack.Entity;
 using PetTrack.ModelViews.Booking;
-using PetTrack.Services.Infrastructure;
 
 namespace PetTrack.Services.Services
 {
