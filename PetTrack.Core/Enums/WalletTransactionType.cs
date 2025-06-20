@@ -6,6 +6,7 @@
         BookingPayment = 1,
         Refund = 2,
         ComissionFee = 3,
-        ReceiveAmount = 4
+        ReceiveAmount = 4,
+        Withdraw = 5
     }
 }

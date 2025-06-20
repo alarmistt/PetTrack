@@ -6,6 +6,8 @@ using PetTrack.Core.Models;
 using PetTrack.ModelViews.ClinicModels;
 using PetTrack.ModelViews.ClinicScheduleModels;
 using PetTrack.ModelViews.ServicePackageModels;
+using PetTrack.ModelViews.WalletTransactionModels;
+using PetTrack.Services.Infrastructure;
 
 namespace PetTrack.Controllers
 {
@@ -16,12 +18,16 @@ namespace PetTrack.Controllers
         private readonly IClinicService _clinicService;
         private readonly IClinicScheduleService _scheduleService;
         private readonly IServicePackageService _servicePackageService;
+        private readonly IWalletTransactionService _walletTransactionService;
+        private readonly IUserContextService _userContextService;
 
-        public UserClinicController(IClinicService clinicService, IServicePackageService servicePackageService, IClinicScheduleService scheduleService)
+        public UserClinicController(IClinicService clinicService, IServicePackageService servicePackageService, IClinicScheduleService scheduleService, IWalletTransactionService walletTransactionService, IUserContextService userContextService)
         {
             _clinicService = clinicService;
             _servicePackageService = servicePackageService;
             _scheduleService = scheduleService;
+            _walletTransactionService = walletTransactionService;
+            _userContextService = userContextService;
         }
 
         #region CLINIC
@@ -136,6 +142,22 @@ namespace PetTrack.Controllers
         {
             await _servicePackageService.DeleteServicePackageAsync(packageId);
             return Ok(BaseResponse.OkMessageResponse("Deleted service package sucessfully"));
+        }
+        #endregion
+
+        #region WALLET / WITHDRAW
+        /// <summary>
+        /// Submits a withdrawal request from the clinic's wallet.
+        /// </summary>
+        /// <param name="request">Withdrawal information.</param>
+        /// <returns>Created withdrawal transaction (pending status).</returns>
+        [HttpPost("withdraw")]
+        [Authorize(Roles = "Clinic")]
+        public async Task<IActionResult> RequestWithdraw([FromBody] WithdrawRequest request)
+        {
+            var userId = _userContextService.GetUserId();
+            var result = await _walletTransactionService.RequestWithdrawAsync(userId, request);
+            return Ok(BaseResponseModel<WithdrawResponse>.OkDataResponse(result, "Withdrawal request submitted successfully"));
         }
         #endregion
     }

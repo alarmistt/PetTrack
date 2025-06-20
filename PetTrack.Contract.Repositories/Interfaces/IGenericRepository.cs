@@ -16,6 +16,8 @@ namespace PetTrack.Contract.Repositories.Interfaces
 
         void Update(T obj);
         void Delete(object id);
+        void DeleteRange(List<T> obj);
+        Task DeleteRangeAsync(List<T> obj);
         void Save();
         Task<IEnumerable<T>> GetAsync(int index, int pageSize);
         Task<T> GetByIdAsync(object id);

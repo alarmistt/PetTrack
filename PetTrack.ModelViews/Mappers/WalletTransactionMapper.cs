@@ -15,6 +15,7 @@ namespace PetTrack.ModelViews.Mappers
                 Description = transaction.Description,
                 BookingId = transaction.BookingId,
                 Type = transaction.Type,
+                Status = transaction.Status,
                 CreatedTime = transaction.CreatedTime
             };
         }

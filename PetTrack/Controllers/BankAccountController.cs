@@ -12,7 +12,7 @@ namespace PetTrack.Controllers
     /// </summary>
     [Route("api/bank-accounts")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Clinic")]
     public class BankAccountController : ControllerBase
     {
         private readonly IBankAccountService _bankAccountService;

@@ -36,6 +36,7 @@ namespace PetTrack.Services
             services.AddScoped<JwtTokenGenerator>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<ITopUpTransactionService, TopUpTransactionService>();
+            services.AddScoped<ISlotService, SlotService>();
         }
          private static void AddAutoMapper(this IServiceCollection services)
         {
