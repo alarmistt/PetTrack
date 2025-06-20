@@ -104,6 +104,7 @@ namespace PetTrack.Repositories.Repositories
         {
             await _dbSet.AddRangeAsync(obj);
         }
+
         public async Task InsertCollection(ICollection<T> collection)
         {
             await _dbSet.AddRangeAsync(collection);
@@ -140,6 +141,17 @@ namespace PetTrack.Repositories.Repositories
         public async Task<PaginatedList<T>> GetPagging(IQueryable<T> query, int index, int pageSize)
         {
             return await query.GetPaginatedList(index, pageSize);
+        }
+
+        public void DeleteRange(List<T> obj)
+        {
+            _dbSet.RemoveRange(obj);
+        }
+
+        public async Task DeleteRangeAsync(List<T> obj)
+        {
+            _dbSet.RemoveRange(obj);
+            await Task.CompletedTask;
         }
     }
 }

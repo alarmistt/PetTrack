@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace PetTrack.Repositories.Base
 {
-    public class KidProgramingDbContextFactory : IDesignTimeDbContextFactory<PetTrackDbContext>
+    public class PetTrackDbContextFactory : IDesignTimeDbContextFactory<PetTrackDbContext>
     {
         public PetTrackDbContext CreateDbContext(string[] args)
         {

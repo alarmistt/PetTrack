@@ -17,7 +17,7 @@ namespace PetTrack.ModelViews.Mappers
 
         public static List<BankAccountResponse> ToBankAccountDtoList(this List<BankAccount> bankAccounts)
         {
-            return bankAccounts.Select(x => ToBankAccountDto(x)).ToList();
+            return bankAccounts.Select(x =>x.ToBankAccountDto()).ToList();
         }
     }
 }

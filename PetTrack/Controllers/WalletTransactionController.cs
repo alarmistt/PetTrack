@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PetTrack.Contract.Services.Interfaces;
+using PetTrack.Core.Helpers;
 using PetTrack.Core.Models;
 using PetTrack.ModelViews.WalletTransactionModels;
 
@@ -12,10 +13,25 @@ namespace PetTrack.Controllers
     public class WalletTransactionController : ControllerBase
     {
         private readonly IWalletTransactionService _transactionService;
+        private readonly IUserContextService _userContextService;
 
-        public WalletTransactionController(IWalletTransactionService transactionService)
+        public WalletTransactionController(IWalletTransactionService transactionService, IUserContextService userContextService)
         {
             _transactionService = transactionService;
+            _userContextService = userContextService;
+        }
+
+        /// <summary>
+        /// Retrieves paginated transaction history for the current user.
+        /// </summary>
+        /// <param name="query">Optional filters such as date range, type, sorting, and pagination.</param>
+        /// <returns>Paginated list of wallet transactions.</returns
+        [HttpGet("my-transactions")]
+        public async Task<IActionResult> GetMyTransactions([FromQuery] WalletTransactionQueryObject query)
+        {
+            query.UserId = _userContextService.GetUserId();
+            var result = await _transactionService.GetPagedTransactionsAsync(query);
+            return Ok(BaseResponseModel<BasePaginatedList<WalletTransactionResponse>>.OkDataResponse(result, "Paged transactions retrieved successfully"));
         }
 
         /// <summary>

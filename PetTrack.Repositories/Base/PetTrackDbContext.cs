@@ -11,6 +11,7 @@ namespace PetTrack.Repositories.Base
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Slot> Slots { get; set; }
         public DbSet<BankAccount> BankAccounts { get; set; }
         public DbSet<Clinic> Clinics { get; set; }
         public DbSet<ClinicSchedule> ClinicSchedules { get; set; }

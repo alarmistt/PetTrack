@@ -12,5 +12,10 @@ namespace PetTrack.Contract.Services.Interfaces
         Task<BasePaginatedList<WalletTransactionResponse>> GetPagedTransactionsAsync(WalletTransactionQueryObject query);
         Task<List<WalletTransactionResponse>> GetByUserIdAsync(string userId);
         Task<WalletTransactionResponse> GetByIdAsync(string transactionId);
+        Task<WithdrawResponse> RequestWithdrawAsync(string userId, WithdrawRequest request);
+        Task<BasePaginatedList<WithdrawResponse>> GetPagedWithdrawsAsync(WithdrawQueryObject query);
+        Task ApprovedWithdrawAsync(string transactionId);
+        Task RejectWithdrawAsync(string transactionId);
+
     }
 }

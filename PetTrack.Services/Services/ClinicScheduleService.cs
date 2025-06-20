@@ -15,14 +15,15 @@ namespace PetTrack.Services.Services
     {
         private readonly IDomainHelperService _helperService;
         private readonly IUserContextService _userContextService;
+        private readonly ISlotService _slotService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public ClinicScheduleService(IUnitOfWork unitOfWork, IUserContextService userContextService, IDomainHelperService helperService)
+        public ClinicScheduleService(IUnitOfWork unitOfWork, IUserContextService userContextService, IDomainHelperService helperService, ISlotService slotService)
         {
             _unitOfWork = unitOfWork;
             _userContextService = userContextService;
             _helperService = helperService;
-
+            _slotService = slotService;
         }
         public async Task<ClinicScheduleResponse> CreateScheduleAsync(string clinicId, CreateClinicScheduleRequest request)
         {
@@ -60,6 +61,9 @@ namespace PetTrack.Services.Services
 
             await _unitOfWork.GetRepository<ClinicSchedule>().UpdateAsync(schedule);
             await _unitOfWork.SaveAsync();
+
+            // Xoá các slot liên quan khi xoá ClinicSchedule
+            await _slotService.RemoveSlotsAfterScheduleDeletedAsync(schedule);
         }
 
         public async Task<List<ClinicScheduleResponse>> GetSchedulesByClinicAsync(string clinicId)
@@ -92,6 +96,9 @@ namespace PetTrack.Services.Services
 
             await _unitOfWork.GetRepository<ClinicSchedule>().UpdateAsync(schedule);
             await _unitOfWork.SaveAsync();
+
+            // đồng bộ slot sau khi update lịch
+            await _slotService.SyncSlotsAfterScheduleUpdatedAsync(schedule);
 
             return schedule.ToScheduleDto();
         }

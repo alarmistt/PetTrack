@@ -10,7 +10,6 @@ using PetTrack.Core.Models;
 using PetTrack.Entity;
 using PetTrack.ModelViews.ClinicModels;
 using PetTrack.ModelViews.Mappers;
-using PetTrack.Services.Infrastructure;
 
 namespace PetTrack.Services.Services
 {
@@ -20,13 +19,15 @@ namespace PetTrack.Services.Services
         private readonly IUserContextService _userContext;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAuthenticationService _authenticationService;
+        private readonly ISlotService _slotService;
 
-        public ClinicService(IUnitOfWork unitOfWork, IUserContextService userContext, IDomainHelperService helperService, IAuthenticationService authenticationService)
+        public ClinicService(IUnitOfWork unitOfWork, IUserContextService userContext, IDomainHelperService helperService, IAuthenticationService authenticationService, ISlotService slotService)
         {
             _unitOfWork = unitOfWork;
             _userContext = userContext;
             _helperService = helperService;
             _authenticationService = authenticationService;
+            _slotService = slotService;
         }
 
         public async Task<ClinicResponse> CreateClinicAsync(CreateClinicRequest request)
@@ -96,6 +97,8 @@ namespace PetTrack.Services.Services
             await _unitOfWork.SaveAsync();
 
             await _authenticationService.UpdateRoleClinicAsync(clinic.OwnerUserId);
+
+            await _slotService.GenerateSlotsFromClinicScheduleAsync(clinicId);
         }
 
 
@@ -196,13 +199,19 @@ namespace PetTrack.Services.Services
                 clinicsQuery = clinicsQuery.Where(c => c.DeletedTime.HasValue);
             }
             // Sorting
-            clinicsQuery = query.SortBy?.ToLower() switch
+            if (!string.IsNullOrWhiteSpace(query.SortBy))
             {
-                "name" => query.IsDescending ? clinicsQuery.OrderByDescending(c => c.Name) : clinicsQuery.OrderBy(c => c.Name),
-                "status" => query.IsDescending ? clinicsQuery.OrderByDescending(c => c.Status) : clinicsQuery.OrderBy(c => c.Status),
-                _ => query.IsDescending ? clinicsQuery.OrderByDescending(c => c.CreatedTime) : clinicsQuery.OrderBy(c => c.CreatedTime)
-            };
-
+                clinicsQuery = query.SortBy?.ToLower() switch
+                {
+                    "name" => query.IsDescending ? clinicsQuery.OrderByDescending(c => c.Name) : clinicsQuery.OrderBy(c => c.Name),
+                    "status" => query.IsDescending ? clinicsQuery.OrderByDescending(c => c.Status) : clinicsQuery.OrderBy(c => c.Status),
+                    _ => query.IsDescending ? clinicsQuery.OrderByDescending(c => c.CreatedTime) : clinicsQuery.OrderBy(c => c.CreatedTime)
+                };
+            }else
+            {
+                clinicsQuery = query.IsDescending ? clinicsQuery.OrderByDescending(c => c.CreatedTime) : clinicsQuery.OrderBy(c => c.CreatedTime);
+            }
+            
             var total = await clinicsQuery.CountAsync();
 
             var items = await clinicsQuery

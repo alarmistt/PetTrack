@@ -78,16 +78,16 @@ namespace PetTrack.Services.Services
             }
 
             // Paging
-            int total = await usersQuery.CountAsync();
+            int totalCount = await usersQuery.CountAsync();
 
             var pagedUsers = await usersQuery
                 .Skip((query.PageIndex - 1) * query.PageSize)
                 .Take(query.PageSize)
                 .ToListAsync();
 
-            var result = pagedUsers.ToListUserDto();
+            var dto = pagedUsers.ToListUserDto();
 
-            return new BasePaginatedList<UserResponseModel>(result, total, query.PageIndex, query.PageSize);
+            return new BasePaginatedList<UserResponseModel>(dto, totalCount, query.PageIndex, query.PageSize);
         }
 
         public async Task<UserResponseModel> GetUserById(string id)

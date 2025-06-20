@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PetTrack.Repositories.Base;
 
@@ -11,9 +12,11 @@ using PetTrack.Repositories.Base;
 namespace PetTrack.Repositories.Migrations
 {
     [DbContext(typeof(PetTrackDbContext))]
-    partial class PetTrackDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250615143017_initialCreate")]
+    partial class initialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -452,12 +455,6 @@ namespace PetTrack.Repositories.Migrations
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("BankName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BankNumber")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BookingId")
                         .HasColumnType("nvarchar(450)");

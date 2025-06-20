@@ -10,6 +10,7 @@ namespace PetTrack.ModelViews.WalletTransactionModels
         public string? Description { get; set; }
         public string? BookingId { get; set; }
         public string Type { get; set; }
+        public string Status { get; set; }
         public DateTimeOffset CreatedTime { get; set; }
     }
 }
