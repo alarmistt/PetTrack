@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PetTrack.Contract.Repositories.Interfaces;
 using PetTrack.Contract.Services.Interfaces;
+using PetTrack.Core.Helpers;
 using PetTrack.ModelViews.Validators;
 using PetTrack.Repositories.Repositories;
 using PetTrack.Services.Infrastructure;
@@ -33,12 +34,14 @@ namespace PetTrack.Services
             services.AddScoped<IUserContextService, UserContextService>();
             services.AddScoped<IDomainHelperService, DomainHelperService>();
             services.AddScoped<IBookingService, BookingService>();
-            services.AddScoped<JwtTokenGenerator>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<ITopUpTransactionService, TopUpTransactionService>();
             services.AddScoped<ISlotService, SlotService>();
+            services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<JwtTokenGenerator>();
         }
-         private static void AddAutoMapper(this IServiceCollection services)
+        private static void AddAutoMapper(this IServiceCollection services)
         {
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
         }
@@ -67,6 +70,9 @@ namespace PetTrack.Services
             services.AddValidatorsFromAssemblyContaining<UpdateWalletTransactionRequestValidator>();
 
             services.AddValidatorsFromAssemblyContaining<CreateBankAccountRequestValidator>();
+            services.AddValidatorsFromAssemblyContaining<UpdateBankAccountRequestValidator>();
+
+            services.AddValidatorsFromAssemblyContaining<UserRegistrationRequestValidator>();
         }
     }
 }

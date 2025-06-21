@@ -44,6 +44,7 @@ namespace PetTrack.Services.Infrastructure
                     Email = user.Email,
                     FullName = user.FullName,
                     AvatarUrl = user.AvatarUrl,
+                    PhoneNumber = user.PhoneNumber,
                     Role = user.Role
                 }
             };

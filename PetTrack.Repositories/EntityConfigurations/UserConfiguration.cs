@@ -16,6 +16,7 @@ namespace PetTrack.Repositories.EntityConfigurations
             builder.HasIndex(x => x.Email).IsUnique();
             builder.Property(x => x.Address).HasMaxLength(255);
 
+            builder.Property(x => x.PasswordHash).HasMaxLength(255);
 
             builder.Property(x => x.FullName).IsRequired().HasMaxLength(255);
 

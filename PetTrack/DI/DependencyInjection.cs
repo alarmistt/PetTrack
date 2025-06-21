@@ -1,20 +1,17 @@
-﻿using FirebaseAdmin.Auth;
+﻿using FirebaseAdmin;
+using FirebaseAdmin.Auth;
 using FirebaseAdmin.Messaging;
-using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Net.payOS;
 using Newtonsoft.Json;
 using PetTrack.Core.Config;
+using PetTrack.Core.Helpers;
 using PetTrack.Repositories.Base;
 using PetTrack.Repositories.SeedData;
 using System.Text;
-using PetTrack.Core.Helpers;
-using PetTrack.Core.Models;
-using PetTrack.Services.Services;
-using System;
-using Net.payOS;
 
 namespace PetTrack.DI
 {
@@ -30,6 +27,8 @@ namespace PetTrack.DI
             services.InitSeedData();
             services.AddFirebase();
             services.AddPayOS(configuration);
+            services.Configure<SmtpSettings>(configuration.GetSection("SmtpSettings"));
+            services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
         }
         public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {

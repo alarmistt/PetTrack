@@ -6,10 +6,12 @@ namespace PetTrack.Entity
     {
         public string FullName { get; set; }
         public string Email { get; set; }
+        public string? PasswordHash { get; set; }
         public string? Address { get; set; }
         public string? PhoneNumber { get; set; }
         public string Role { get; set; } // [User, Admin, Clinic]
         public string? AvatarUrl { get; set; }
+        public bool IsPasswordSet { get; set; }
 
         public ICollection<Clinic> Clinics { get; set; }
         public ICollection<Booking> Bookings { get; set; }
