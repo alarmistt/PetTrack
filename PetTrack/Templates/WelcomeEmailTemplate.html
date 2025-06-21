@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chào mừng đến với PetTrack</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Cơ bản */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .email-header img {
+            height: 60px;
+            margin-bottom: 15px;
+            background-color: white;
+            border-radius: 50%;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+            .email-header img {
+                height: 60px;
+                margin-bottom: 15px;
+            }
+
+        .email-body {
+            padding: 30px;
+        }
+
+            .email-body h2 {
+                margin-top: 0;
+                color: #222;
+            }
+
+            .email-body p {
+                line-height: 1.6;
+                font-size: 15px;
+            }
+
+        .email-button {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+            .email-button a {
+                background-color: #35a4ff;
+                color: white;
+                padding: 14px 28px;
+                border-radius: 6px;
+                text-decoration: none;
+                font-weight: bold;
+                display: inline-block;
+                transition: background-color 0.3s ease;
+            }
+
+                .email-button a:hover {
+                    background-color: #1d8ed8;
+                }
+
+        .email-footer {
+            background-color: #f1f1f1;
+            padding: 20px 30px;
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+        }
+
+            .email-footer a {
+                color: #777;
+                text-decoration: underline;
+            }
+
+        .social-icons {
+            margin-top: 10px;
+        }
+
+            .social-icons a {
+                margin: 0 8px;
+                text-decoration: none;
+                display: inline-block;
+            }
+
+            .social-icons img {
+                width: 24px;
+                height: 24px;
+            }
+
+        /* Dark Mode */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #121212;
+                color: #ddd;
+            }
+
+            .email-container {
+                background-color: #1e1e1e;
+                box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+            }
+
+            .email-body h2 {
+                color: #fff;
+            }
+
+            .email-footer {
+                background-color: #2c2c2c;
+                color: #aaa;
+            }
+
+                .email-footer a {
+                    color: #aaa;
+                }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <img src="https://i.postimg.cc/mD83rGnw/logo1-removebg-preview.png" alt="PetTrack Logo" />
+            <h1>Chào mừng đến với PetTrack! 🐾</h1>
+        </div>
+
+        <div class="email-body">
+            <h2>Xin chào {{UserName}},</h2>
+            <p>Chúng tôi rất vui mừng khi bạn đã gia nhập cộng đồng PetTrack!</p>
+            <p><strong>PetTrack</strong> là giải pháp toàn diện giúp bạn quản lý sức khỏe và lịch sử chăm sóc thú cưng một cách tiện lợi, dễ dàng.</p>
+            <p>Bạn có thể đặt lịch khám, tư vấn với chuyên gia và theo dõi quá trình phát triển của bé cưng mọi lúc, mọi nơi.</p>
+
+            <div class="email-button">
+                <a href="{{AppLink}}">Khám phá ngay</a>
+            </div>
+
+            <p>Nếu bạn có bất kỳ câu hỏi nào, đừng ngần ngại liên hệ với chúng tôi. Chúng tôi luôn sẵn sàng hỗ trợ bạn và thú cưng của bạn! ❤️</p>
+        </div>
+
+        <div class="email-footer">
+            © {{Year}} PetTrack. Đã đăng ký bản quyền.<br />
+            <a href="https://yourdomain.com">Truy cập website</a> |
+            <a href="mailto:support@pettrack.com">Liên hệ hỗ trợ</a>
+
+            <div class="social-icons">
+                <a href="https://facebook.com"><img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" /></a>
+                <a href="https://twitter.com"><img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter" /></a>
+                <a href="https://instagram.com"><img src="https://cdn-icons-png.flaticon.com/512/733/733558.png" alt="Instagram" /></a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
