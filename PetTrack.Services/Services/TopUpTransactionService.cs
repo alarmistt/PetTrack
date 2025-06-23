@@ -1,9 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Net.payOS;
 using PetTrack.Contract.Repositories.Interfaces;
+using PetTrack.Contract.Repositories.PaggingItems;
 using PetTrack.Contract.Services.Interfaces;
 using PetTrack.Core.Enums;
 using PetTrack.Entity;
+using PetTrack.ModelViews.TopUpModels;
 
 namespace PetTrack.Services.Services
 {
@@ -12,14 +15,16 @@ namespace PetTrack.Services.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly PayOS _payOS;
         private readonly IWalletService _walletService;
+        private readonly IMapper _mapper;
         private IUserContextService _userContextService;
 
-        public TopUpTransactionService(IUnitOfWork unitOfWork, PayOS payOS, IWalletService walletService, IUserContextService userContextService)
+        public TopUpTransactionService(IMapper mapper, IUnitOfWork unitOfWork, PayOS payOS, IWalletService walletService, IUserContextService userContextService)
         {
             _unitOfWork = unitOfWork;
             _payOS = payOS;
             _walletService = walletService;
             _userContextService = userContextService;
+            _mapper = mapper;
         }
 
         public async Task CreateTopUpTransactionAsync(string accountId, decimal amount, string transactionCode)
@@ -60,7 +65,37 @@ namespace PetTrack.Services.Services
             {
                 throw new ArgumentException("Transaction is not paid yet");
             }
+
+        }
+        public async Task<PaginatedList<TopUpResponse>> GetTopUpTransaction(int pageIndex, int pageSize, string? userId = null, string? status = null)
+        {
+            var query = _unitOfWork.GetRepository<TopUpTransaction>().Entities.AsQueryable();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                userId = _userContextService.GetUserId() ?? throw new ArgumentException("User not found", nameof(_userContextService));
+            }
             
+            query = query.Where(t => t.UserId == userId);
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                query = query.Where(t => t.Status == status);
+            }
+
+            var pagedTransactions = await PaginatedList<TopUpTransaction>.CreateAsync(query, pageIndex, pageSize);
+
+           
+            var mapped = pagedTransactions.Items
+                .Select(t => _mapper.Map<TopUpResponse>(t))
+                .ToList();
+
+            return new PaginatedList<TopUpResponse>(
+                mapped,
+                pagedTransactions.TotalCount,
+                pagedTransactions.PageNumber,
+                pagedTransactions.PageSize
+            );
         }
     }
 }

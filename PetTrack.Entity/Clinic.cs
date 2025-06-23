@@ -14,7 +14,7 @@ namespace PetTrack.Entity
 
         public string OwnerUserId { get; set; }
         public User Owner { get; set; }
-
+        public ICollection<Booking> Bookings { get; set; }
         public ICollection<ServicePackage> ServicePackages { get; set; }
         public ICollection<ClinicSchedule> Schedules { get; set; }
 

@@ -5,6 +5,7 @@ using PetTrack.Core.Models;
 using PetTrack.Entity;
 using PetTrack.ModelViews.Booking;
 using PetTrack.ModelViews.Payment;
+using PetTrack.ModelViews.TopUpModels;
 
 
 namespace PetTrack.Controllers
@@ -43,6 +44,12 @@ namespace PetTrack.Controllers
             {
                 return StatusCode(500, BaseResponseModel<string>.InternalErrorResponseModel($"An error occurred: {ex.Message}"));
             }
+        }
+        [HttpGet("get-history-transaction")]
+       public async Task<IActionResult> GetTopUpTransactionAsync(int pageIndex = 1, int pageSize =10, string? userId = null, string? status = null)
+        {
+            return Ok(BaseResponseModel<TopUpResponse>
+                .OkDataResponse( await _topUpTransactionService.GetTopUpTransaction(pageIndex,pageSize,userId,status), "Get data successful"));
         }
 
     }
