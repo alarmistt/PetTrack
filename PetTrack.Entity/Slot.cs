@@ -9,5 +9,6 @@ namespace PetTrack.Entity
         public int DayOfWeek { get; set; } // 0 = Sunday ... 6 Sarturday
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
+        public ICollection<Booking> Bookings { get; set; }
     }
 }

@@ -9,7 +9,8 @@ namespace PetTrack.Entity
 
         public string ClinicId { get; set; }
         public Clinic Clinic { get; set; }
-
+        public string SlotId { get; set; }
+        public Slot Slot { get; set; }
         public string ServicePackageId { get; set; }
         public ServicePackage ServicePackage { get; set; }
 
