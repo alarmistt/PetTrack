@@ -533,43 +533,45 @@ namespace PetTrack.Repositories.SeedData
         }
         private async Task SeedSlots()
         {
-            if (await _context.Slots.CountAsync() >= 10) return;
+            if (await _context.Slots.CountAsync() >= 35) return;
 
             var clinicIds = new[] { "clinic1", "clinic2", "clinic3", "clinic4", "clinic5" };
             var slots = new List<Slot>();
-
-            foreach (var clinicId in clinicIds)
+            for(int i = 0; i<=6; i++)
             {
-                // Tạo 3 slot: 08:00–10:00, 10:00–12:00, 13:00–15:00 cho thứ 2
-                slots.Add(new Slot
+                foreach (var clinicId in clinicIds)
                 {
-                    Id = $"slot_{clinicId}_1",
-                    ClinicId = clinicId,
-                    DayOfWeek = 1,
-                    StartTime = new TimeSpan(8, 0, 0),
-                    EndTime = new TimeSpan(10, 0, 0)
-                });
+                    // Tạo 3 slot: 08:00–10:00, 10:00–12:00, 13:00–15:00 cho thứ 2
+                    slots.Add(new Slot
+                    {
+                        Id = $"slot_{clinicId}_1_{i+1}",
+                        ClinicId = clinicId,
+                        DayOfWeek = i,
+                        StartTime = new TimeSpan(8, 0, 0),
+                        EndTime = new TimeSpan(10, 0, 0)
+                    });
 
-                slots.Add(new Slot
-                {
-                    Id = $"slot_{clinicId}_2",
-                    ClinicId = clinicId,
-                    DayOfWeek = 1,
-                    StartTime = new TimeSpan(10, 0, 0),
-                    EndTime = new TimeSpan(12, 0, 0)
-                });
+                    slots.Add(new Slot
+                    {
+                        Id = $"slot_{clinicId}_2_{i+1}",
+                        ClinicId = clinicId,
+                        DayOfWeek = i,
+                        StartTime = new TimeSpan(10, 0, 0),
+                        EndTime = new TimeSpan(12, 0, 0)
+                    });
 
-                slots.Add(new Slot
-                {
-                    Id = $"slot_{clinicId}_3",
-                    ClinicId = clinicId,
-                    DayOfWeek = 1,
-                    StartTime = new TimeSpan(13, 0, 0),
-                    EndTime = new TimeSpan(15, 0, 0)
-                });
+                    slots.Add(new Slot
+                    {
+                        Id = $"slot_{clinicId}_3_{i + 1}",
+                        ClinicId = clinicId,
+                        DayOfWeek = i,
+                        StartTime = new TimeSpan(13, 0, 0),
+                        EndTime = new TimeSpan(15, 0, 0)
+                    });
+                }
             }
 
-            _context.Slots.AddRange(slots);
+             _context.Slots.AddRange(slots);
             await _context.SaveChangesAsync();
         }
 
