@@ -9,6 +9,7 @@ namespace PetTrack.Contract.Services.Interfaces
         Task GenerateSlotsFromClinicScheduleAsync(string clinicId);
         Task SyncSlotsAfterScheduleUpdatedAsync(ClinicSchedule updatedSchedule);
         Task RemoveSlotsAfterScheduleDeletedAsync(ClinicSchedule deletedSchedule);
+        Task CheckExistSlotAsync(string clinicId, DateTime AppointmentDate);
     }
 
 }

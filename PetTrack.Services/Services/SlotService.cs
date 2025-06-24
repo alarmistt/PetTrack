@@ -19,6 +19,10 @@ namespace PetTrack.Services.Services
         {
             _unitOfWork = unitOfWork;
         }
+        public Task CheckExistSlotAsync(string clinicId, DateTime AppointmentDate)
+        {
+            throw new NotImplementedException();
+        }
         public async Task<List<SlotResponse>> GetSlotsByClinicIdAsync(string clinicId)
         {
             var slots = await _unitOfWork.GetRepository<Slot>().Entities
@@ -121,5 +125,7 @@ namespace PetTrack.Services.Services
             await _unitOfWork.GetRepository<Slot>().DeleteRangeAsync(slotsToDelete);
             await _unitOfWork.SaveAsync();
         }
+
+       
     }
 }

@@ -265,7 +265,7 @@ namespace PetTrack.Repositories.SeedData
         }
         private async Task SeedClinics()
         {
-            if (await _context.Clinics.CountAsync() >= 10) return;
+            if (await _context.Clinics.CountAsync() >= 5) return;
 
             var clinics = new List<Clinic>
     {
