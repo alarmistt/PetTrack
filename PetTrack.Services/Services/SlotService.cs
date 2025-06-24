@@ -19,10 +19,46 @@ namespace PetTrack.Services.Services
         {
             _unitOfWork = unitOfWork;
         }
-        public Task CheckExistSlotAsync(string clinicId, DateTime AppointmentDate)
+        public async Task<List<CheckSlotReponse>> CheckExistSlotAsync(string clinicId, DateTime appointmentDate)
         {
-            throw new NotImplementedException();
+            DayOfWeek dayOfWeek = appointmentDate.DayOfWeek;
+            var slots = await _unitOfWork.GetRepository<Slot>().Entities
+                .Where(s => s.ClinicId == clinicId && s.DayOfWeek == (int)dayOfWeek && !s.DeletedTime.HasValue)
+                .ToListAsync();
+
+            if (!slots.Any())
+                return new List<CheckSlotReponse>();
+
+            var slotIds = slots.Select(s => s.Id).ToList();
+
+            var invalidStatuses = new[]
+            {
+        BookingStatus.Pending.ToString(),
+        BookingStatus.Cancelled.ToString(),
+        BookingStatus.Refunded.ToString()
+    };
+
+            // Lấy các slot đã có người đặt hợp lệ trong ngày
+            var bookedSlotIds = await _unitOfWork.GetRepository<Booking>().Entities
+                .Where(b => slotIds.Contains(b.SlotId)
+                    && !invalidStatuses.Contains(b.Status)
+                    && !b.DeletedTime.HasValue
+                    && b.AppointmentDate.Date == appointmentDate.Date)
+                .Select(b => b.SlotId)
+                .Distinct()
+                .ToListAsync();
+
+            // Map tất cả slot, đánh dấu Booked
+            return slots.Select(s => new CheckSlotReponse
+            {
+                Id = s.Id,
+                DayOfWeek = s.DayOfWeek,
+                StartTime = s.StartTime,
+                EndTime = s.EndTime,
+                Status = bookedSlotIds.Contains(s.Id) ? StatusSlot.Inactive.ToString() : StatusSlot.Active.ToString()
+            }).ToList();
         }
+
         public async Task<List<SlotResponse>> GetSlotsByClinicIdAsync(string clinicId)
         {
             var slots = await _unitOfWork.GetRepository<Slot>().Entities
