@@ -5,7 +5,7 @@ namespace PetTrack.ModelViews.Booking
     public class BookingResponseModel
     {
         public string UserId { get; set; }
-        public User User { get; set; }
+        public string FullName { get; set; }
 
         public string ClinicId { get; set; }
         public string ClinicName { get; set; }
