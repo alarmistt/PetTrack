@@ -12,8 +12,8 @@ using PetTrack.Repositories.Base;
 namespace PetTrack.Repositories.Migrations
 {
     [DbContext(typeof(PetTrackDbContext))]
-    [Migration("20250621020823_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250624043547_initialDb")]
+    partial class initialDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -92,6 +92,10 @@ namespace PetTrack.Repositories.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("SlotId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -108,6 +112,8 @@ namespace PetTrack.Repositories.Migrations
                     b.HasIndex("ClinicId");
 
                     b.HasIndex("ServicePackageId");
+
+                    b.HasIndex("SlotId");
 
                     b.HasIndex("Status");
 
@@ -525,7 +531,7 @@ namespace PetTrack.Repositories.Migrations
             modelBuilder.Entity("PetTrack.Entity.Booking", b =>
                 {
                     b.HasOne("PetTrack.Entity.Clinic", "Clinic")
-                        .WithMany()
+                        .WithMany("Bookings")
                         .HasForeignKey("ClinicId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -533,6 +539,12 @@ namespace PetTrack.Repositories.Migrations
                     b.HasOne("PetTrack.Entity.ServicePackage", "ServicePackage")
                         .WithMany()
                         .HasForeignKey("ServicePackageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PetTrack.Entity.Slot", "Slot")
+                        .WithMany("Bookings")
+                        .HasForeignKey("SlotId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -545,6 +557,8 @@ namespace PetTrack.Repositories.Migrations
                     b.Navigation("Clinic");
 
                     b.Navigation("ServicePackage");
+
+                    b.Navigation("Slot");
 
                     b.Navigation("User");
                 });
@@ -660,9 +674,16 @@ namespace PetTrack.Repositories.Migrations
 
             modelBuilder.Entity("PetTrack.Entity.Clinic", b =>
                 {
+                    b.Navigation("Bookings");
+
                     b.Navigation("Schedules");
 
                     b.Navigation("ServicePackages");
+                });
+
+            modelBuilder.Entity("PetTrack.Entity.Slot", b =>
+                {
+                    b.Navigation("Bookings");
                 });
 
             modelBuilder.Entity("PetTrack.Entity.User", b =>

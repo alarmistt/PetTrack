@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PetTrack.Repositories.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class initialDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -210,6 +210,7 @@ namespace PetTrack.Repositories.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ClinicId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SlotId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ServicePackageId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     AppointmentDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
@@ -233,6 +234,12 @@ namespace PetTrack.Repositories.Migrations
                         name: "FK_Bookings_ServicePackages_ServicePackageId",
                         column: x => x.ServicePackageId,
                         principalTable: "ServicePackages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Slots_SlotId",
+                        column: x => x.SlotId,
+                        principalTable: "Slots",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -338,6 +345,11 @@ namespace PetTrack.Repositories.Migrations
                 column: "ServicePackageId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Bookings_SlotId",
+                table: "Bookings",
+                column: "SlotId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Bookings_Status",
                 table: "Bookings",
                 column: "Status");
@@ -428,9 +440,6 @@ namespace PetTrack.Repositories.Migrations
                 name: "ClinicSchedules");
 
             migrationBuilder.DropTable(
-                name: "Slots");
-
-            migrationBuilder.DropTable(
                 name: "TopUpTransactions");
 
             migrationBuilder.DropTable(
@@ -444,6 +453,9 @@ namespace PetTrack.Repositories.Migrations
 
             migrationBuilder.DropTable(
                 name: "ServicePackages");
+
+            migrationBuilder.DropTable(
+                name: "Slots");
 
             migrationBuilder.DropTable(
                 name: "Clinics");
