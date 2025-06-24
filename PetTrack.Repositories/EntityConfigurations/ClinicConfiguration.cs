@@ -26,6 +26,8 @@ namespace PetTrack.Repositories.EntityConfigurations
             builder.HasIndex(x => x.OwnerUserId);
 
             builder.HasOne(x => x.Owner).WithMany(x => x.Clinics).HasForeignKey(x => x.OwnerUserId);
+
+
         }
     }
 }

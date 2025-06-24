@@ -8,6 +8,7 @@ namespace PetTrack.Repositories.Base
     {
         public PetTrackDbContext(DbContextOptions<PetTrackDbContext> options) : base(options)
         {
+            this.Database.Migrate();
         }
 
         public DbSet<User> Users { get; set; }

@@ -39,9 +39,9 @@ namespace PetTrack.Repositories.EntityConfigurations
                    .HasForeignKey(x => x.ServicePackageId)
                    .OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(b => b.Slot)
-            .WithMany(s => s.Bookings)
-            .HasForeignKey(b => b.SlotId)
-            .OnDelete(DeleteBehavior.Restrict);
+                    .WithMany(s => s.Bookings)
+                    .HasForeignKey(b => b.SlotId)
+                    .OnDelete(DeleteBehavior.Restrict);
         }
     }
 
