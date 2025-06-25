@@ -217,7 +217,9 @@ namespace PetTrack.Services.Services
         {
             var normalizedEmail = NormalizeEmail(request.Email);
 
-            var exists = await _unitOfWork.GetRepository<User>().Entities
+            var userRepo = _unitOfWork.GetRepository<User>();
+            var exists = await userRepo.Entities
+                .AsNoTracking()
                 .AnyAsync(u => u.Email == normalizedEmail && !u.DeletedTime.HasValue);
 
             if (exists)
@@ -234,15 +236,15 @@ namespace PetTrack.Services.Services
                 IsPasswordSet = true
             };
 
-            await _unitOfWork.GetRepository<User>().InsertAsync(user);
+            await userRepo.InsertAsync(user);
             await _unitOfWork.SaveAsync();
 
             await _walletService.CreateWalletIfNotExistsAsync(user.Id);
 
             var confirmationLink = $"{_appSettings.BaseClientUrl}/verify-email?userId={user.Id}";
             var templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Templates", "WelcomeEmailTemplate.html");
-            string emailTemplate = await File.ReadAllTextAsync(templatePath);
 
+            string emailTemplate = await File.ReadAllTextAsync(templatePath);
             emailTemplate = emailTemplate
                 .Replace("{{UserName}}", user.FullName)
                 .Replace("{{AppLink}}", confirmationLink)

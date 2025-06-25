@@ -26,6 +26,7 @@ namespace PetTrack.Services
         {
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IBankAccountService, BankAccountService>();
+            services.AddScoped<IChatService, ChatService>();
             services.AddScoped<IClinicService, ClinicService>();
             services.AddScoped<IClinicScheduleService, ClinicScheduleService>();
             services.AddScoped<IServicePackageService, ServicePackageService>();
@@ -73,6 +74,8 @@ namespace PetTrack.Services
             services.AddValidatorsFromAssemblyContaining<UpdateBankAccountRequestValidator>();
 
             services.AddValidatorsFromAssemblyContaining<UserRegistrationRequestValidator>();
+
+            services.AddValidatorsFromAssemblyContaining<SendMessageRequestValidator>();
         }
     }
 }

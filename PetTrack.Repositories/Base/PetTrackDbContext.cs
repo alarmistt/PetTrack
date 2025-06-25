@@ -22,6 +22,7 @@ namespace PetTrack.Repositories.Base
         public DbSet<WalletTransaction> WalletTransactions { get; set; }
         public DbSet<TopUpTransaction> TopUpTransactions { get; set; }
         public DbSet<BookingNotification> BookingNotifications { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
