@@ -18,7 +18,7 @@ namespace PetTrack.ModelViews.Validators
 
             RuleFor(x => x.Password)
                 .NotEmpty().WithMessage("Password is required")
-                .MinimumLength(6).WithMessage("Password must be at least 6 characters long");
+                .MinimumLength(6).WithMessage("Password must be at least 6 characters");
 
             RuleFor(x => x.ConfirmPassword)
                 .NotEmpty().WithMessage("Confirm password is required")
@@ -26,7 +26,7 @@ namespace PetTrack.ModelViews.Validators
 
             RuleFor(x => x.Password)
                 .Must(PasswordHelper.IsStrongPassword)
-                .WithMessage("Password must contain at least 1 uppercase, 1 lowercase, 1 digit, 1 special character and be at least 8 characters long.");
+                .WithMessage("Password isn't valid.");
         }
     }
 }

@@ -29,9 +29,6 @@ namespace PetTrack.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] UserRegistrationRequest request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var result = await _authenticationService.RegisterAsync(request);
             return Ok(BaseResponseModel<UserResponseModel>.OkDataResponse(result, "User registered successfully"));
         }
@@ -45,9 +42,6 @@ namespace PetTrack.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> LoginWithEmailPassword([FromBody] LoginRequest request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var result = await _authenticationService.LoginWithEmailPasswordAsync(request);
             return Ok(BaseResponseModel<AuthenticationModel>.OkDataResponse(result, "Login successfully"));
         }

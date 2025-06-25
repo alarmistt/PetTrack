@@ -97,10 +97,9 @@ namespace PetTrack.DI
                     ClockSkew = TimeSpan.Zero,
                     ValidAudience = jwtSettings.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey!))
-
                 };
                 e.SaveToken = true;
-                e.RequireHttpsMetadata = true;
+                e.RequireHttpsMetadata = false; // http = false , https = true
                 e.Events = new JwtBearerEvents
                 {
                     OnChallenge = context =>
@@ -185,13 +184,13 @@ namespace PetTrack.DI
         {
             services.AddCors(options =>
             {
-                options.AddPolicy("CorsPolicy",
-                    builder =>
-                    {
-                        builder.WithOrigins("*")
-                               .AllowAnyHeader()
-                               .AllowAnyMethod();
-                    });
+                options.AddPolicy("CorsPolicy", builder =>
+                {
+                    builder.WithOrigins("http://10.0.2.2:7276", "http://127.0.0.1:51568") // origin: builder.WithOrigins(*)
+                           .AllowAnyHeader()
+                           .AllowAnyMethod()
+                           .AllowCredentials(); // Bắt buộc nếu dùng token/cookie
+                });
             });
         }
         public static void ConfigSwagger(this IServiceCollection services)
@@ -238,7 +237,7 @@ namespace PetTrack.DI
             using var scope = services.BuildServiceProvider().CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<PetTrackDbContext>();
             var initialiser = new SeedData(context);
-            initialiser.Initialise().Wait();
+            initialiser.Initialise();
         }
     }
 }
