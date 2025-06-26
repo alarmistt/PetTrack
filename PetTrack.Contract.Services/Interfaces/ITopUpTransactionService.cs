@@ -6,7 +6,7 @@ namespace PetTrack.Contract.Services.Interfaces
 {
     public interface ITopUpTransactionService
     {
-        Task CreateTopUpTransactionAsync(string accoundId, decimal amount,string transactionCode);
+        Task CreateTopUpTransactionAsync(string accoundId, decimal amount,string transactionCode, string? bookingId);
         Task CheckStatusTransactionAsync(string orderCode);
         Task<PaginatedList<TopUpResponse>> GetTopUpTransaction(int pageIndex, int pageSize, string? userId = null, string? status = null);
     }

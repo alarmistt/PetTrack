@@ -21,7 +21,7 @@ namespace PetTrack.Services.Services
             _userContextService = userContextService;
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper), "Mapper cannot be null");
         }
-        public async Task CreateBookingsAsync(BookingRequestModel model)
+        public async Task<BookingResponseModel> CreateBookingsAsync(BookingRequestModel model)
         {
             model.Validate();
             Slot? slot = await _unitOfWork.GetRepository<Slot>().Entities
@@ -36,9 +36,11 @@ namespace PetTrack.Services.Services
             booking.PlatformFee = package.Price * 0.05m;
             booking.ClinicReceiveAmount = package.Price * 0.95m;
             booking.ClinicId = slot.ClinicId;
+            booking.Price = package.Price;
             booking.Status = BookingStatus.Pending.ToString();
             await _unitOfWork.GetRepository<Booking>().InsertAsync(booking);
             await _unitOfWork.GetRepository<Booking>().SaveAsync();
+            return _mapper.Map<BookingResponseModel>(booking);
         }
 
         public async Task DeleteBookingAsync(string id)

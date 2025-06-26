@@ -123,7 +123,7 @@ namespace PetTrack.Repositories.SeedData
 
         private async Task SeedBookings()
         {
-            if (await _context.Bookings.CountAsync() >= 10) return;
+            if (await _context.Bookings.CountAsync() >= 5) return;
 
             var slot1 = await _context.Slots.FirstAsync(x => x.ClinicId == "clinic1");
             var slot2 = await _context.Slots.FirstAsync(x => x.ClinicId == "clinic2");
@@ -380,7 +380,7 @@ namespace PetTrack.Repositories.SeedData
 
         private async Task SeedBookingNotifications()
         {
-            if (await _context.BookingNotifications.CountAsync() >= 10) return;
+            if (await _context.BookingNotifications.CountAsync() >= 5) return;
 
             var notifications = new List<BookingNotification>
     {
@@ -495,7 +495,7 @@ namespace PetTrack.Repositories.SeedData
 
         private async Task SeedTopUpTransactions()
         {
-            if (await _context.TopUpTransactions.CountAsync() >= 10) return;
+            if (await _context.TopUpTransactions.CountAsync() >= 5) return;
 
             var topUps = new List<TopUpTransaction>
     {

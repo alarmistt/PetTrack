@@ -12,8 +12,8 @@ using PetTrack.Repositories.Base;
 namespace PetTrack.Repositories.Migrations
 {
     [DbContext(typeof(PetTrackDbContext))]
-    [Migration("20250626070112_initDb")]
-    partial class initDb
+    [Migration("20250626074539_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -379,6 +379,9 @@ namespace PetTrack.Repositories.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("BookingId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTimeOffset>("CreatedTime")
                         .HasColumnType("datetimeoffset");
 
@@ -408,6 +411,10 @@ namespace PetTrack.Repositories.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookingId")
+                        .IsUnique()
+                        .HasFilter("[BookingId] IS NOT NULL");
 
                     b.HasIndex("Status");
 
@@ -687,11 +694,17 @@ namespace PetTrack.Repositories.Migrations
 
             modelBuilder.Entity("PetTrack.Entity.TopUpTransaction", b =>
                 {
+                    b.HasOne("PetTrack.Entity.Booking", "Booking")
+                        .WithOne("TopUpTransaction")
+                        .HasForeignKey("PetTrack.Entity.TopUpTransaction", "BookingId");
+
                     b.HasOne("PetTrack.Entity.User", "User")
                         .WithMany("TopUps")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Booking");
 
                     b.Navigation("User");
                 });
@@ -727,6 +740,9 @@ namespace PetTrack.Repositories.Migrations
             modelBuilder.Entity("PetTrack.Entity.Booking", b =>
                 {
                     b.Navigation("Notifications");
+
+                    b.Navigation("TopUpTransaction")
+                        .IsRequired();
 
                     b.Navigation("Transactions");
                 });

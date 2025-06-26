@@ -26,7 +26,7 @@ namespace PetTrack.Services.Services
             int orderCode = int.Parse(DateTimeOffset.Now.ToString("ffffff"));
             var accountId = _userContextService.GetUserId() ?? throw new ArgumentException("User not found", nameof(_userContextService));
             var account = await _unitOfWork.GetRepository<User>().Entities.FirstOrDefaultAsync(u => u.Id == accountId);
-            await _topUpTransactionService.CreateTopUpTransactionAsync(accountId, request.Price, orderCode.ToString());
+            await _topUpTransactionService.CreateTopUpTransactionAsync(accountId, request.Price, orderCode.ToString(),null);
             ItemData item = new ItemData(accountId, 1, request.Price);
             var descriptions = request.Description = $"Deposit {request.Price}";
             List<ItemData> items = new List<ItemData> { item };
@@ -43,6 +43,29 @@ namespace PetTrack.Services.Services
                 throw new Exception();
             }
 
+        }
+
+        public async Task<CreatePaymentResult> CreateLinkBookingAsync(CreateLinkBookingRequest request)
+        {
+            int orderCode = int.Parse(DateTimeOffset.Now.ToString("ffffff"));
+            var accountId = _userContextService.GetUserId() ?? throw new ArgumentException("User not found", nameof(_userContextService));
+            var account = await _unitOfWork.GetRepository<User>().Entities.FirstOrDefaultAsync(u => u.Id == accountId);
+            await _topUpTransactionService.CreateTopUpTransactionAsync(accountId, request.Price, orderCode.ToString(),request.BookingId);
+            ItemData item = new ItemData(accountId, 1, request.Price);
+            var descriptions = request.Description = $"Booking {request.Price}";
+            List<ItemData> items = new List<ItemData> { item };
+            var expiredAt = DateTimeOffset.Now.AddMinutes(15).ToUnixTimeSeconds();
+            PaymentData paymentDataPayment = new PaymentData(orderCode, request.Price, descriptions, items, request.CancelUrl, request.ReturnUrl, null, null, null, null, null, expiredAt);
+            try
+            {
+                var createdLink = await _payOS.createPaymentLink(paymentDataPayment);
+                return createdLink;
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
         }
     }
 }

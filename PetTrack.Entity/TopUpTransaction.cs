@@ -10,5 +10,7 @@ namespace PetTrack.Entity
         public string PaymentMethod { get; set; } // [PayOS, MoMo..]
         public string Status { get; set; } // [Pending, Success, Failed ]
         public string TransactionCode { get; set; }
+        public string? BookingId { get; set; }
+        public Booking Booking { get; set; }
     }
 }

@@ -24,6 +24,7 @@ namespace PetTrack.Repositories.EntityConfigurations
             builder.HasIndex(x => x.Status);
 
             builder.HasOne(x => x.User).WithMany(u => u.TopUps).HasForeignKey(x => x.UserId);
+            builder.HasOne(x => x.Booking).WithOne(u => u.TopUpTransaction).HasForeignKey<TopUpTransaction>(x => x.BookingId);
         }
     }
 }

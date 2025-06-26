@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PetTrack.Repositories.Migrations
 {
     /// <inheritdoc />
-    public partial class initDb : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -112,31 +112,6 @@ namespace PetTrack.Repositories.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TopUpTransactions",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PaymentMethod = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    TransactionCode = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    LastUpdatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TopUpTransactions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TopUpTransactions_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -312,6 +287,37 @@ namespace PetTrack.Repositories.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TopUpTransactions",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaymentMethod = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    TransactionCode = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    BookingId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastUpdatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TopUpTransactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TopUpTransactions_Bookings_BookingId",
+                        column: x => x.BookingId,
+                        principalTable: "Bookings",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TopUpTransactions_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "WalletTransactions",
                 columns: table => new
                 {
@@ -423,6 +429,13 @@ namespace PetTrack.Repositories.Migrations
                 name: "IX_Slots_ClinicId_DayOfWeek_StartTime",
                 table: "Slots",
                 columns: new[] { "ClinicId", "DayOfWeek", "StartTime" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TopUpTransactions_BookingId",
+                table: "TopUpTransactions",
+                column: "BookingId",
+                unique: true,
+                filter: "[BookingId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TopUpTransactions_Status",

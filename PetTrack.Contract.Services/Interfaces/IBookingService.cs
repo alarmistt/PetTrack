@@ -6,7 +6,7 @@ namespace PetTrack.Contract.Services.Interfaces
 {
     public interface IBookingService
     {
-        Task CreateBookingsAsync(BookingRequestModel model);
+        Task<BookingResponseModel> CreateBookingsAsync(BookingRequestModel model);
         Task DeleteBookingAsync(string id);
         Task<BookingResponseModel> GetBookingByIdAsync(string id);
         Task<PaginatedList<BookingResponseModel>> GetListBooking(int pageIndex, int pageSize, string? clinicId = null, string? userId = null, string? status = null);

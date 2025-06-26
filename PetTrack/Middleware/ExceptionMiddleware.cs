@@ -25,23 +25,47 @@ namespace PetTrack.Middleware
             }
             catch (ErrorException ex)
             {
-                _logger.LogWarning(ex, "Handled business exception");
-                await HandleExceptionAsync(context, ex.StatusCode, ex.ErrorDetail);
+                _logger.LogWarning(ex, $"Handled business exception at path {context.Request.Path}");
+
+                if (!context.Response.HasStarted)
+                {
+                    await HandleExceptionAsync(context, ex.StatusCode, ex.ErrorDetail);
+                }
+                else
+                {
+                    _logger.LogWarning("❌ Response already started — cannot handle ErrorException");
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unhandled server exception");
-                var error = new ErrorDetail
+                _logger.LogError(ex, $"Unhandled exception at path {context.Request.Path}");
+
+                if (!context.Response.HasStarted)
                 {
-                    ErrorMessage = "An unexpected error occurred.",
-                    ErrorCode = ResponseCodeConstants.INTERNAL_SERVER_ERROR,
-                };
-                await HandleExceptionAsync(context, (int)StatusCodeHelper.ServerError, error);
+                    var error = new ErrorDetail
+                    {
+                        ErrorMessage = "An unexpected error occurred.",
+                        ErrorCode = ResponseCodeConstants.INTERNAL_SERVER_ERROR,
+                    };
+
+                    await HandleExceptionAsync(context, (int)StatusCodeHelper.ServerError, error);
+                }
+                else
+                {
+                    _logger.LogWarning("❌ Response already started — cannot handle unhandled exception");
+                }
             }
         }
 
         private static async Task HandleExceptionAsync(HttpContext context, int statusCode, ErrorDetail errorDetail)
         {
+            if (context.Response.HasStarted)
+            {
+                Console.WriteLine("❌ Cannot write to response, already started.");
+                return;
+            }
+
+            context.Response.Clear();
             context.Response.StatusCode = statusCode;
             context.Response.ContentType = "application/json";
 
@@ -55,6 +79,7 @@ namespace PetTrack.Middleware
             await context.Response.WriteAsync(result);
         }
     }
+
 
     public static class ExceptionMiddlewareExtensions
     {
