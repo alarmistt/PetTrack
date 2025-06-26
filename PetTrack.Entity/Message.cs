@@ -1,4 +1,3 @@
-using PetTrack.Core.Enums;
 using PetTrack.Core.Models;
 
 namespace PetTrack.Entity
