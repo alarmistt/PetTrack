@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Net.payOS.Types;
 using PetTrack.Contract.Services.Interfaces;
 using PetTrack.Core.Models;
@@ -12,6 +13,7 @@ namespace PetTrack.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class PaymentController : ControllerBase
     {
         private readonly IPaymentService _paymenService;
@@ -28,8 +30,15 @@ namespace PetTrack.Controllers
             var paymentIntent = await _paymenService.CreateLinkAsync(request);
             return Ok(BaseResponseModel<CreatePaymentResult>.OkDataResponse(paymentIntent, "Get data successful"));
         }
+        [HttpPost("create-booking-payment")]
+        public async Task<IActionResult> CreateBookingPayment([FromBody] CreateLinkBookingRequest request)
+
+        {
+            var paymentIntent = await _paymenService.CreateLinkBookingAsync(request);
+            return Ok(BaseResponseModel<CreatePaymentResult>.OkDataResponse(paymentIntent, "Get data successful"));
+        }
         [HttpPost("check-status-transaction")]
-        public async Task<IActionResult> CheckStatusTransaction([FromBody] string orderCode)
+        public async Task<IActionResult> CheckStatusTransaction(string orderCode)
         {
             if (string.IsNullOrEmpty(orderCode))
             {

@@ -21,5 +21,6 @@ namespace PetTrack.Entity
         public decimal? ClinicReceiveAmount { get; set; }
         public ICollection<WalletTransaction> Transactions { get; set; }
         public ICollection<BookingNotification> Notifications { get; set; }
+        public TopUpTransaction TopUpTransaction { get; set; }
     }
 }

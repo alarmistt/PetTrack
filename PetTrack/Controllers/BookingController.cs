@@ -2,6 +2,7 @@
 using PetTrack.Contract.Repositories.PaggingItems;
 using PetTrack.Contract.Services.Interfaces;
 using PetTrack.Core.Models;
+using PetTrack.Entity;
 using PetTrack.ModelViews.Booking;
 
 namespace PetTrack.Controllers
@@ -32,8 +33,8 @@ namespace PetTrack.Controllers
         public async Task<IActionResult> CreateBooking([FromBody] BookingRequestModel model)
         {
 
-            await _bookingService.CreateBookingsAsync(model);
-            return Ok(BaseResponseModel<string>.OkMessageResponseModel("Create booking successful"));
+            BookingResponseModel booking =  await _bookingService.CreateBookingsAsync(model);
+            return Ok(BaseResponseModel<BookingResponseModel>.OkDataResponse(booking, "Get data successful"));
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBooking(string id)

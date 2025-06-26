@@ -7,6 +7,7 @@ using PetTrack.Contract.Services.Interfaces;
 using PetTrack.Core.Enums;
 using PetTrack.Entity;
 using PetTrack.ModelViews.TopUpModels;
+using System.Reflection.Metadata;
 
 namespace PetTrack.Services.Services
 {
@@ -27,13 +28,14 @@ namespace PetTrack.Services.Services
             _mapper = mapper;
         }
 
-        public async Task CreateTopUpTransactionAsync(string accountId, decimal amount, string transactionCode)
+        public async Task CreateTopUpTransactionAsync(string accountId, decimal amount, string transactionCode,string? bookingId)
         {
             var transaction = new TopUpTransaction
             {
                 UserId = accountId,
                 Amount = amount,
                 PaymentMethod = "PayOS",
+                BookingId = bookingId == null ? null : bookingId,
                 Status = TopUpTransactionStatus.Pending.ToString(),
                 TransactionCode = transactionCode
             };
@@ -52,12 +54,27 @@ namespace PetTrack.Services.Services
             if (checking.status == "PAID")
             {
                 var userId = _userContextService.GetUserId() ?? throw new ArgumentException("User not found", nameof(_userContextService));
-                var wallet = await _unitOfWork.GetRepository<Wallet>()
+                if (transaction.BookingId == null)
+                {
+                    var wallet = await _unitOfWork.GetRepository<Wallet>()
                     .Entities.FirstOrDefaultAsync(w => w.UserId == userId && !w.DeletedTime.HasValue);
-                await _walletService.AddBalanceAsync(wallet!.Id, transaction.Amount);
+                    await _walletService.AddBalanceAsync(wallet!.Id, transaction.Amount);
+                    
+                }
+                else
+                {
+                    Booking? booking = await _unitOfWork.GetRepository<Booking>()
+                    .Entities.Include(x => x.Clinic).FirstOrDefaultAsync(w => w.Id == transaction.BookingId && !w.DeletedTime.HasValue);
+                    Wallet? wallet =   await _unitOfWork.GetRepository<Wallet>()
+                    .Entities.FirstOrDefaultAsync(w => w.UserId == booking.Clinic.OwnerUserId);
+                     await _walletService.AddBalanceAsync(wallet.Id, booking.ClinicReceiveAmount ?? 0);
+                    booking.Status = BookingStatus.Paid.ToString();
+                    _unitOfWork.GetRepository<Booking>().Update(booking);
+                    await _unitOfWork.GetRepository<Booking>().SaveAsync();
+                }
+               
                 transaction.Status = TopUpTransactionStatus.Success.ToString();
                 transaction.LastUpdatedTime = DateTimeOffset.UtcNow;
-
                 _unitOfWork.GetRepository<TopUpTransaction>().Update(transaction);
                 await _unitOfWork.GetRepository<TopUpTransaction>().SaveAsync();
             }
