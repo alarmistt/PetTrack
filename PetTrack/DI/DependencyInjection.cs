@@ -232,12 +232,12 @@ namespace PetTrack.DI
                 });
             });
         }
-        public static void InitSeedData(this IServiceCollection services)
+        public static async Task InitSeedData(this IServiceCollection services)
         {
             using var scope = services.BuildServiceProvider().CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<PetTrackDbContext>();
             var initialiser = new SeedData(context);
-            initialiser.Initialise();
+            await initialiser.Initialise();
         }
     }
 }
