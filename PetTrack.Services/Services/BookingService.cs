@@ -36,6 +36,7 @@ namespace PetTrack.Services.Services
             booking.PlatformFee = package.Price * 0.05m;
             booking.ClinicReceiveAmount = package.Price * 0.95m;
             booking.ClinicId = slot.ClinicId;
+            booking.SlotId = slot.Id;
             booking.Price = package.Price;
             booking.Status = BookingStatus.Pending.ToString();
             await _unitOfWork.GetRepository<Booking>().InsertAsync(booking);
