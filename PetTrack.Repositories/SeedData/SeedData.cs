@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using PetTrack.Core.Helpers;
 using PetTrack.Entity;
 using PetTrack.Repositories.Base;
 
@@ -207,32 +208,32 @@ namespace PetTrack.Repositories.SeedData
         {
             if (await _context.Users.CountAsync() >= 10) return;
 
-            var passwordHasher = new PasswordHasher<User>();
             var newPassword = "@@Password123";
 
             var users = new List<User>
-            {
-                new User { Id = "user1", FullName = "Nguyen Van A", Email = "user1@example.com", Role = "User" },
-                new User { Id = "user2", FullName = "Tran Thi B", Email = "user2@example.com", Role = "User" },
-                new User { Id = "user3", FullName = "Le Van C", Email = "user3@example.com", Role = "User" },
-                new User { Id = "user4", FullName = "Pham Thi D", Email = "user4@example.com", Role = "User" },
-                new User { Id = "user5", FullName = "Hoang Van E", Email = "user5@example.com", Role = "User" },
-                new User { Id = "user6", FullName = "Nguyen Thi F", Email = "user6@example.com", Role = "User" },
-                new User { Id = "user7", FullName = "Dang Van G", Email = "user7@example.com", Role = "User" },
-                new User { Id = "user8", FullName = "Vo Thi H", Email = "user8@example.com", Role = "User" },
-                new User { Id = "user9", FullName = "Pham Van I", Email = "user9@example.com", Role = "User" },
-                new User { Id = "user10", FullName = "Tran Thi K", Email = "user10@example.com", Role = "User" }
-            };
+    {
+        new User { Id = "user1", FullName = "Nguyen Van A", Email = "user1@example.com", Role = "User" },
+        new User { Id = "user2", FullName = "Tran Thi B", Email = "user2@example.com", Role = "User" },
+        new User { Id = "user3", FullName = "Le Van C", Email = "user3@example.com", Role = "User" },
+        new User { Id = "user4", FullName = "Pham Thi D", Email = "user4@example.com", Role = "User" },
+        new User { Id = "user5", FullName = "Hoang Van E", Email = "user5@example.com", Role = "User" },
+        new User { Id = "user6", FullName = "Nguyen Thi F", Email = "user6@example.com", Role = "User" },
+        new User { Id = "user7", FullName = "Dang Van G", Email = "user7@example.com", Role = "User" },
+        new User { Id = "user8", FullName = "Vo Thi H", Email = "user8@example.com", Role = "User" },
+        new User { Id = "user9", FullName = "Pham Van I", Email = "user9@example.com", Role = "User" },
+        new User { Id = "user10", FullName = "Tran Thi K", Email = "user10@example.com", Role = "User" }
+    };
 
             foreach (var user in users)
             {
-                user.PasswordHash = passwordHasher.HashPassword(user, newPassword);
+                user.PasswordHash = BCryptHelper.HashPassword(newPassword); // Gọi helper
                 user.IsPasswordSet = true;
             }
 
             _context.Users.AddRange(users);
             await _context.SaveChangesAsync();
         }
+
 
         private async Task SeedBankAccounts()
         {

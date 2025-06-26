@@ -6,12 +6,12 @@ namespace PetTrack.Services.Infrastructure
     {
         public string HashPassword(string password)
         {
-            return BCrypt.Net.BCrypt.HashPassword(password);
+            return BCryptHelper.HashPassword(password);
         }
 
         public bool VerifyPassword(string hashedPassword, string inputPassword)
         {
-            return BCrypt.Net.BCrypt.Verify(inputPassword, hashedPassword);
+            return BCryptHelper.VerifyPassword(inputPassword, hashedPassword);
         }
     }
 }
