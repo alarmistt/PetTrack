@@ -154,7 +154,7 @@ namespace PetTrack.Repositories.SeedData
             SlotId = slot2.Id,
             ServicePackageId = "svc3",
             AppointmentDate = DateTimeOffset.Now.AddDays(2),
-            Status = "Confirmed",
+            Status = "Completed",
             Price = 250000,
             PlatformFee = 25000,
             ClinicReceiveAmount = 225000
@@ -167,7 +167,7 @@ namespace PetTrack.Repositories.SeedData
             SlotId = slot3.Id,
             ServicePackageId = "svc4",
             AppointmentDate = DateTimeOffset.Now.AddDays(-1),
-            Status = "Completed",
+            Status = "Cancelled",
             Price = 500000,
             PlatformFee = 50000,
             ClinicReceiveAmount = 450000
@@ -193,7 +193,7 @@ namespace PetTrack.Repositories.SeedData
             SlotId = slot5.Id,
             ServicePackageId = "svc6",
             AppointmentDate = DateTimeOffset.Now.AddDays(4),
-            Status = "Paid",
+            Status = "Completed",
             Price = 220000,
             PlatformFee = 22000,
             ClinicReceiveAmount = 198000
