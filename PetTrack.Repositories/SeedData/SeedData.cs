@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using PetTrack.Entity;
 using PetTrack.Repositories.Base;
 
@@ -25,13 +26,13 @@ namespace PetTrack.Repositories.SeedData
                         _context.Database.Migrate();
                     }
                     await SeedUsers();
-                    await SeedWallets();
-                    await SeedBankAccounts();
                     await SeedClinics();
+                    await SeedServicePackages();
                     await SeedClinicSchedules();
                     await SeedSlots();
-                    await SeedServicePackages();
                     await SeedBookings();
+                    await SeedWallets();
+                    await SeedBankAccounts();
                     await SeedBookingNotifications();
                     await SeedTopUpTransactions();
                     await SeedWalletTransactions();
@@ -41,11 +42,8 @@ namespace PetTrack.Repositories.SeedData
             {
                 Console.WriteLine(ex.ToString());
             }
-            finally
-            {
-                _context.Dispose();
-            }
         }
+
         private async Task SeedWalletTransactions()
         {
             if (await _context.WalletTransactions.CountAsync() >= 10) return;
@@ -126,6 +124,12 @@ namespace PetTrack.Repositories.SeedData
         {
             if (await _context.Bookings.CountAsync() >= 10) return;
 
+            var slot1 = await _context.Slots.FirstAsync(x => x.ClinicId == "clinic1");
+            var slot2 = await _context.Slots.FirstAsync(x => x.ClinicId == "clinic2");
+            var slot3 = await _context.Slots.FirstAsync(x => x.ClinicId == "clinic3");
+            var slot4 = await _context.Slots.FirstAsync(x => x.ClinicId == "clinic4");
+            var slot5 = await _context.Slots.FirstAsync(x => x.ClinicId == "clinic5");
+
             var bookings = new List<Booking>
     {
         new Booking
@@ -133,7 +137,7 @@ namespace PetTrack.Repositories.SeedData
             Id = "booking1",
             UserId = "user1",
             ClinicId = "clinic1",
-            SlotId = "slot_clinic1_1",
+            SlotId = slot1.Id,
             ServicePackageId = "svc1",
             AppointmentDate = DateTimeOffset.Now.AddDays(1),
             Status = "Pending",
@@ -146,7 +150,7 @@ namespace PetTrack.Repositories.SeedData
             Id = "booking2",
             UserId = "user2",
             ClinicId = "clinic2",
-            SlotId = "slot_clinic2_1",
+            SlotId = slot2.Id,
             ServicePackageId = "svc3",
             AppointmentDate = DateTimeOffset.Now.AddDays(2),
             Status = "Confirmed",
@@ -159,7 +163,7 @@ namespace PetTrack.Repositories.SeedData
             Id = "booking3",
             UserId = "user3",
             ClinicId = "clinic3",
-            SlotId = "slot_clinic3_1",
+            SlotId = slot3.Id,
             ServicePackageId = "svc4",
             AppointmentDate = DateTimeOffset.Now.AddDays(-1),
             Status = "Completed",
@@ -172,7 +176,7 @@ namespace PetTrack.Repositories.SeedData
             Id = "booking4",
             UserId = "user4",
             ClinicId = "clinic4",
-            SlotId = "slot_clinic4_1",
+            SlotId = slot4.Id,
             ServicePackageId = "svc5",
             AppointmentDate = DateTimeOffset.Now.AddDays(3),
             Status = "Cancelled",
@@ -185,7 +189,7 @@ namespace PetTrack.Repositories.SeedData
             Id = "booking5",
             UserId = "user5",
             ClinicId = "clinic5",
-            SlotId = "slot_clinic5_1",
+            SlotId = slot5.Id,
             ServicePackageId = "svc6",
             AppointmentDate = DateTimeOffset.Now.AddDays(4),
             Status = "Paid",
@@ -203,19 +207,28 @@ namespace PetTrack.Repositories.SeedData
         {
             if (await _context.Users.CountAsync() >= 10) return;
 
+            var passwordHasher = new PasswordHasher<User>();
+            var newPassword = "@@Password123";
+
             var users = new List<User>
             {
-                new User { Id = "user1", FullName = "Nguyen Van A", Email = "user1@example.com", Role = "User", IsPasswordSet = false },
-                new User { Id = "user2", FullName = "Tran Thi B", Email = "user2@example.com", Role = "User", IsPasswordSet = false },
-                new User { Id = "user3", FullName = "Le Van C", Email = "user3@example.com", Role = "User", IsPasswordSet = false },
-                new User { Id = "user4", FullName = "Pham Thi D", Email = "user4@example.com", Role = "User", IsPasswordSet = false },
-                new User { Id = "user5", FullName = "Hoang Van E", Email = "user5@example.com", Role = "User", IsPasswordSet = false },
-                new User { Id = "user6", FullName = "Nguyen Thi F", Email = "user6@example.com", Role = "User", IsPasswordSet = false },
-                new User { Id = "user7", FullName = "Dang Van G", Email = "user7@example.com", Role = "User", IsPasswordSet = false },
-                new User { Id = "user8", FullName = "Vo Thi H", Email = "user8@example.com", Role = "User", IsPasswordSet = false },
-                new User { Id = "user9", FullName = "Pham Van I", Email = "user9@example.com", Role = "User", IsPasswordSet = false },
-                new User { Id = "user10", FullName = "Tran Thi K", Email = "user10@example.com", Role = "User", IsPasswordSet = false }
+                new User { Id = "user1", FullName = "Nguyen Van A", Email = "user1@example.com", Role = "User" },
+                new User { Id = "user2", FullName = "Tran Thi B", Email = "user2@example.com", Role = "User" },
+                new User { Id = "user3", FullName = "Le Van C", Email = "user3@example.com", Role = "User" },
+                new User { Id = "user4", FullName = "Pham Thi D", Email = "user4@example.com", Role = "User" },
+                new User { Id = "user5", FullName = "Hoang Van E", Email = "user5@example.com", Role = "User" },
+                new User { Id = "user6", FullName = "Nguyen Thi F", Email = "user6@example.com", Role = "User" },
+                new User { Id = "user7", FullName = "Dang Van G", Email = "user7@example.com", Role = "User" },
+                new User { Id = "user8", FullName = "Vo Thi H", Email = "user8@example.com", Role = "User" },
+                new User { Id = "user9", FullName = "Pham Van I", Email = "user9@example.com", Role = "User" },
+                new User { Id = "user10", FullName = "Tran Thi K", Email = "user10@example.com", Role = "User" }
             };
+
+            foreach (var user in users)
+            {
+                user.PasswordHash = passwordHasher.HashPassword(user, newPassword);
+                user.IsPasswordSet = true;
+            }
 
             _context.Users.AddRange(users);
             await _context.SaveChangesAsync();
@@ -242,6 +255,7 @@ namespace PetTrack.Repositories.SeedData
             _context.BankAccounts.AddRange(bankAccounts);
             await _context.SaveChangesAsync();
         }
+
         private async Task SeedWallets()
         {
             if (await _context.Wallets.CountAsync() >= 10) return;
@@ -263,6 +277,7 @@ namespace PetTrack.Repositories.SeedData
             _context.Wallets.AddRange(wallets);
             await _context.SaveChangesAsync();
         }
+
         private async Task SeedClinics()
         {
             if (await _context.Clinics.CountAsync() >= 5) return;
@@ -335,6 +350,7 @@ namespace PetTrack.Repositories.SeedData
             _context.Clinics.AddRange(clinics);
             await _context.SaveChangesAsync();
         }
+
         private async Task SeedClinicSchedules()
         {
             if (await _context.ClinicSchedules.CountAsync() >= 10) return;
@@ -360,6 +376,7 @@ namespace PetTrack.Repositories.SeedData
             _context.ClinicSchedules.AddRange(schedules);
             await _context.SaveChangesAsync();
         }
+
         private async Task SeedBookingNotifications()
         {
             if (await _context.BookingNotifications.CountAsync() >= 10) return;
@@ -416,9 +433,10 @@ namespace PetTrack.Repositories.SeedData
             _context.BookingNotifications.AddRange(notifications);
             await _context.SaveChangesAsync();
         }
+
         private async Task SeedServicePackages()
         {
-            if (await _context.ServicePackages.CountAsync() >= 10) return;
+            if (await _context.ServicePackages.AnyAsync(sp => sp.Id == "svc1")) return;
 
             var packages = new List<ServicePackage>
     {
@@ -426,55 +444,54 @@ namespace PetTrack.Repositories.SeedData
         {
             Id = "svc1",
             ClinicId = "clinic1",
-            Name = "Khám tổng quát",
-            Description = "Dịch vụ khám tổng quát cho thú cưng",
-            Price = 150000
-        },
-        new ServicePackage
-        {
-            Id = "svc2",
-            ClinicId = "clinic1",
-            Name = "Tiêm phòng",
-            Description = "Tiêm vaccine định kỳ cho chó/mèo",
-            Price = 200000
+            Name = "Tiêm phòng cơ bản",
+            Description = "Gói tiêm phòng định kỳ cho chó mèo",
+            Price = 150000,
+            CreatedTime = DateTimeOffset.UtcNow
         },
         new ServicePackage
         {
             Id = "svc3",
             ClinicId = "clinic2",
-            Name = "Spa thú cưng",
-            Description = "Tắm, cắt tỉa lông, vệ sinh tai",
-            Price = 250000
+            Name = "Khám tổng quát",
+            Description = "Khám sức khoẻ thú cưng định kỳ",
+            Price = 250000,
+            CreatedTime = DateTimeOffset.UtcNow
         },
         new ServicePackage
         {
             Id = "svc4",
             ClinicId = "clinic3",
-            Name = "Phẫu thuật tiểu phẫu",
-            Description = "Các tiểu phẫu đơn giản cho thú cưng",
-            Price = 500000
+            Name = "Triệt sản",
+            Description = "Phẫu thuật triệt sản an toàn",
+            Price = 500000,
+            CreatedTime = DateTimeOffset.UtcNow
         },
         new ServicePackage
         {
             Id = "svc5",
             ClinicId = "clinic4",
-            Name = "Khám da liễu",
-            Description = "Khám và điều trị các bệnh về da",
-            Price = 180000
+            Name = "Tẩy giun",
+            Description = "Tẩy giun định kỳ cho chó mèo",
+            Price = 180000,
+            CreatedTime = DateTimeOffset.UtcNow
         },
         new ServicePackage
         {
             Id = "svc6",
             ClinicId = "clinic5",
-            Name = "Cạo vôi răng",
-            Description = "Làm sạch răng miệng và cạo vôi",
-            Price = 220000
+            Name = "Gói khám nâng cao",
+            Description = "Khám chuyên sâu và xét nghiệm",
+            Price = 220000,
+            CreatedTime = DateTimeOffset.UtcNow
         }
     };
 
             _context.ServicePackages.AddRange(packages);
             await _context.SaveChangesAsync();
         }
+
+
         private async Task SeedTopUpTransactions()
         {
             if (await _context.TopUpTransactions.CountAsync() >= 10) return;
@@ -531,20 +548,21 @@ namespace PetTrack.Repositories.SeedData
             _context.TopUpTransactions.AddRange(topUps);
             await _context.SaveChangesAsync();
         }
+
         private async Task SeedSlots()
         {
             if (await _context.Slots.CountAsync() >= 35) return;
 
             var clinicIds = new[] { "clinic1", "clinic2", "clinic3", "clinic4", "clinic5" };
             var slots = new List<Slot>();
-            for(int i = 0; i<=6; i++)
+            for (int i = 0; i <= 6; i++)
             {
                 foreach (var clinicId in clinicIds)
                 {
                     // Tạo 3 slot: 08:00–10:00, 10:00–12:00, 13:00–15:00 cho thứ 2
                     slots.Add(new Slot
                     {
-                        Id = $"slot_{clinicId}_1_{i+1}",
+                        Id = $"slot_{clinicId}_1_{i + 1}",
                         ClinicId = clinicId,
                         DayOfWeek = i,
                         StartTime = new TimeSpan(8, 0, 0),
@@ -553,7 +571,7 @@ namespace PetTrack.Repositories.SeedData
 
                     slots.Add(new Slot
                     {
-                        Id = $"slot_{clinicId}_2_{i+1}",
+                        Id = $"slot_{clinicId}_2_{i + 1}",
                         ClinicId = clinicId,
                         DayOfWeek = i,
                         StartTime = new TimeSpan(10, 0, 0),
@@ -571,11 +589,8 @@ namespace PetTrack.Repositories.SeedData
                 }
             }
 
-             _context.Slots.AddRange(slots);
+            _context.Slots.AddRange(slots);
             await _context.SaveChangesAsync();
         }
-
-
-
     }
 }
