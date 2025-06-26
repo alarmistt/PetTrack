@@ -12,8 +12,8 @@ using PetTrack.Repositories.Base;
 namespace PetTrack.Repositories.Migrations
 {
     [DbContext(typeof(PetTrackDbContext))]
-    [Migration("20250624043547_initialDb")]
-    partial class initialDb
+    [Migration("20250626070112_initDb")]
+    partial class initDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -258,6 +258,46 @@ namespace PetTrack.Repositories.Migrations
                     b.HasIndex("ClinicId");
 
                     b.ToTable("ClinicSchedules", (string)null);
+                });
+
+            modelBuilder.Entity("PetTrack.Entity.Message", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTimeOffset>("CreatedTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("DeletedTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("LastUpdatedTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ReceiverId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("PetTrack.Entity.ServicePackage", b =>
@@ -604,6 +644,25 @@ namespace PetTrack.Repositories.Migrations
                     b.Navigation("Clinic");
                 });
 
+            modelBuilder.Entity("PetTrack.Entity.Message", b =>
+                {
+                    b.HasOne("PetTrack.Entity.User", "Receiver")
+                        .WithMany("ReceivedMessages")
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PetTrack.Entity.User", "Sender")
+                        .WithMany("SentMessages")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
+                });
+
             modelBuilder.Entity("PetTrack.Entity.ServicePackage", b =>
                 {
                     b.HasOne("PetTrack.Entity.Clinic", "Clinic")
@@ -693,6 +752,10 @@ namespace PetTrack.Repositories.Migrations
                     b.Navigation("Clinics");
 
                     b.Navigation("Notifications");
+
+                    b.Navigation("ReceivedMessages");
+
+                    b.Navigation("SentMessages");
 
                     b.Navigation("TopUps");
 
