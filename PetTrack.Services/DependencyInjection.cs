@@ -40,6 +40,7 @@ namespace PetTrack.Services
             services.AddScoped<ISlotService, SlotService>();
             services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<JwtTokenGenerator>();
         }
         private static void AddAutoMapper(this IServiceCollection services)
