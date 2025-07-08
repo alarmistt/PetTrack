@@ -7,14 +7,6 @@ using FluentValidation.AspNetCore;
 using PetTrack.Services.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
-var port = Environment.GetEnvironmentVariable("PORT");
-if (!string.IsNullOrEmpty(port))
-{
-    builder.WebHost.ConfigureKestrel(serverOptions =>
-    {
-        serverOptions.ListenAnyIP(int.Parse(port));
-    });
-}
 builder.Services.AddSwaggerGen(c =>
 {
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -54,5 +46,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<ChatHub>("/chathub").RequireCors("CorsPolicy");
-
+if (!app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
+}
 app.Run();
