@@ -25,8 +25,22 @@ namespace PetTrack.Repositories.Base
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            var utcConverter = new UtcDateTimeOffsetConverter();
+
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                foreach (var property in entityType.GetProperties())
+                {
+                    if (property.ClrType == typeof(DateTimeOffset))
+                    {
+                        property.SetValueConverter(utcConverter);
+                    }
+                }
+            }
+
             base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(PetTrackDbContext).Assembly); // Fluent API Configuration
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(PetTrackDbContext).Assembly);
         }
+
     }
 }

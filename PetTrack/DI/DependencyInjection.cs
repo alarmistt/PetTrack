@@ -12,19 +12,20 @@ using PetTrack.Core.Helpers;
 using PetTrack.Repositories.Base;
 using PetTrack.Repositories.SeedData;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PetTrack.DI
 {
     public static class DependencyInjection
     {
-        public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        public static async Task AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDatabase(configuration);
             services.JwtSettingsConfig(configuration);
             services.AddAuthenJwt(configuration);
             services.ConfigSwagger();
             services.ConfigCors();
-            services.InitSeedData();
+            await services.InitSeedData();
             services.AddFirebase();
             services.AddPayOS(configuration);
             services.Configure<SmtpSettings>(configuration.GetSection("SmtpSettings"));
@@ -34,7 +35,7 @@ namespace PetTrack.DI
         {
             services.AddDbContext<PetTrackDbContext>(options =>
             {
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
             });
         }
         public static void AddPayOS(this IServiceCollection services, IConfiguration configuration)

@@ -2,7 +2,7 @@
 {
     public class CoreHelper
     {
-        public static DateTimeOffset SystemTimeNow => CoreHelper.ConvertToUtcPlus7(DateTimeOffset.Now);
+        public static DateTimeOffset SystemTimeNow => CoreHelper.ConvertToUtcPlus7(DateTimeOffset.UtcNow);
 
         public static DateTimeOffset ConvertToUtcPlus7NotChanges(DateTimeOffset dateTimeOffset)
         {

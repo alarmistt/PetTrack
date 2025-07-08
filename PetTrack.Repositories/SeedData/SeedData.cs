@@ -19,7 +19,7 @@ namespace PetTrack.Repositories.SeedData
         {
             try
             {
-                if (_context.Database.IsSqlServer())
+                if (_context.Database.IsNpgsql())
                 {
                     bool dbExists = _context.Database.CanConnect();
                     if (!dbExists)
