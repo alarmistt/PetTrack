@@ -43,8 +43,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<ChatHub>("/chathub").RequireCors("CorsPolicy");
-if (!app.Environment.IsProduction())
-{
-    app.UseHttpsRedirection();
-}
+app.UseHttpsRedirection();
+
 app.Run();
