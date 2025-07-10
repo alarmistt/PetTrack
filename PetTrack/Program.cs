@@ -25,9 +25,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApplication(builder.Configuration);
 await builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost3000",
+        policy => policy.WithOrigins("http://localhost:3000")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+});
 var app = builder.Build();
-app.UseCors("CorsPolicy");
+app.UseCors("AllowLocalhost3000");
 
 app.UseExceptionMiddleware();
 
@@ -42,7 +48,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHub<ChatHub>("/chathub").RequireCors("CorsPolicy");
+app.MapHub<ChatHub>("/chathub").RequireCors("AllowLocalhost3000");
 app.UseHttpsRedirection();
 
 app.Run();
