@@ -62,13 +62,21 @@ namespace PetTrack.Services.Services
                 }
                 else
                 {
+                    // EXe sua lai cho dung voi booking
                     Booking? booking = await _unitOfWork.GetRepository<Booking>()
                     .Entities.Include(x => x.Clinic).FirstOrDefaultAsync(w => w.Id == transaction.BookingId && !w.DeletedTime.HasValue);
                     Wallet? wallet =   await _unitOfWork.GetRepository<Wallet>()
                     .Entities.FirstOrDefaultAsync(w => w.UserId == booking.Clinic.OwnerUserId);
                      await _walletService.AddBalanceAsync(wallet.Id, booking.ClinicReceiveAmount ?? 0);
-                    booking.Status = BookingStatus.Completed.ToString();
-                    _unitOfWork.GetRepository<Booking>().Update(booking);
+
+                    List<Booking> bookings = await _unitOfWork.GetRepository<Booking>()
+                        .Entities.Where(b => b.UserId == booking.UserId).ToListAsync();
+
+                    foreach (var b in bookings)
+                    {
+                        b.Status = BookingStatus.Completed.ToString();
+                        _unitOfWork.GetRepository<Booking>().Update(b);
+                    }    
                     await _unitOfWork.GetRepository<Booking>().SaveAsync();
                 }
                
