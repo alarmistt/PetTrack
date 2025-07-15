@@ -58,28 +58,20 @@ namespace PetTrack.Services.Services
                     var wallet = await _unitOfWork.GetRepository<Wallet>()
                     .Entities.FirstOrDefaultAsync(w => w.UserId == userId && !w.DeletedTime.HasValue);
                     await _walletService.AddBalanceAsync(wallet!.Id, transaction.Amount);
-                    
+
                 }
                 else
                 {
-                    // EXe sua lai cho dung voi booking
                     Booking? booking = await _unitOfWork.GetRepository<Booking>()
                     .Entities.Include(x => x.Clinic).FirstOrDefaultAsync(w => w.Id == transaction.BookingId && !w.DeletedTime.HasValue);
-                    Wallet? wallet =   await _unitOfWork.GetRepository<Wallet>()
+                    Wallet? wallet = await _unitOfWork.GetRepository<Wallet>()
                     .Entities.FirstOrDefaultAsync(w => w.UserId == booking.Clinic.OwnerUserId);
-                     await _walletService.AddBalanceAsync(wallet.Id, booking.ClinicReceiveAmount ?? 0);
-
-                    List<Booking> bookings = await _unitOfWork.GetRepository<Booking>()
-                        .Entities.Where(b => b.UserId == booking.UserId).ToListAsync();
-
-                    foreach (var b in bookings)
-                    {
-                        b.Status = BookingStatus.Completed.ToString();
-                        _unitOfWork.GetRepository<Booking>().Update(b);
-                    }    
+                    await _walletService.AddBalanceAsync(wallet.Id, booking.ClinicReceiveAmount ?? 0);
+                    booking.Status = BookingStatus.Completed.ToString();
+                    _unitOfWork.GetRepository<Booking>().Update(booking);
                     await _unitOfWork.GetRepository<Booking>().SaveAsync();
                 }
-               
+
                 transaction.Status = TopUpTransactionStatus.Success.ToString();
                 transaction.LastUpdatedTime = DateTimeOffset.UtcNow;
                 _unitOfWork.GetRepository<TopUpTransaction>().Update(transaction);
