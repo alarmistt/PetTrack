@@ -67,6 +67,10 @@ namespace PetTrack.Services.Services
                     Wallet? wallet = await _unitOfWork.GetRepository<Wallet>()
                     .Entities.FirstOrDefaultAsync(w => w.UserId == booking.Clinic.OwnerUserId);
                     await _walletService.AddBalanceAsync(wallet.Id, booking.ClinicReceiveAmount ?? 0);
+
+                    Wallet? adminWallet = await _unitOfWork.GetRepository<Wallet>()
+                    .Entities.Include(x=> x.User).FirstOrDefaultAsync(w => w.User.Role.Equals(UserRole.Admin.ToString()));
+                    await _walletService.AddBalanceAsync(adminWallet.Id, booking.PlatformFee ?? 0);
                     booking.Status = BookingStatus.Completed.ToString();
                     _unitOfWork.GetRepository<Booking>().Update(booking);
                     await _unitOfWork.GetRepository<Booking>().SaveAsync();
