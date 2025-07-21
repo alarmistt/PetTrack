@@ -20,5 +20,6 @@ namespace PetTrack.Entity
         public Wallet Wallet { get; set; }
         public ICollection<Message> SentMessages { get; set; }
         public ICollection<Message> ReceivedMessages { get; set; }
+        public ICollection<Feedback> Feedbacks { get; set; }
     }
 }
