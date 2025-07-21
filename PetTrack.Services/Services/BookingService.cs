@@ -33,8 +33,8 @@ namespace PetTrack.Services.Services
             Booking booking = _mapper.Map<Booking>(model);    
             booking.UserId = _userContextService.GetUserId() ?? throw new ArgumentException("User not found", nameof(_userContextService));
             ServicePackage? package = await _unitOfWork.GetRepository<ServicePackage>().Entities.FirstOrDefaultAsync(pa => pa.Id == model.ServicePackageId);
-            booking.PlatformFee = package.Price * 0.05m;
-            booking.ClinicReceiveAmount = package.Price * 0.95m;
+            booking.PlatformFee = package.Price * 0.15m;
+            booking.ClinicReceiveAmount = package.Price * 0.85m;
             booking.ClinicId = slot.ClinicId;
             booking.SlotId = slot.Id;
             booking.Price = package.Price;
