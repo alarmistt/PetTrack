@@ -10,7 +10,6 @@ namespace PetTrack.ModelViews.Mappers
             return new FeedbackResponse
             {
                 Id = feedback.Id,
-                BookingId = feedback.BookingId,
                 UserId = feedback.UserId,
                 FullName = feedback.User?.FullName,
                 Comment = feedback.Comment,

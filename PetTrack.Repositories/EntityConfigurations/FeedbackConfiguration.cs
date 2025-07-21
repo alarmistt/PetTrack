@@ -15,10 +15,6 @@ namespace PetTrack.Repositories.EntityConfigurations
             builder.HasOne(f => f.User)
                    .WithMany()
                    .HasForeignKey(f => f.UserId);
-
-            builder.HasOne(f => f.Booking)
-                   .WithMany()
-                   .HasForeignKey(f => f.BookingId);
         }
     }
 }
