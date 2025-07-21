@@ -22,5 +22,7 @@ namespace PetTrack.Entity
         public ICollection<WalletTransaction> Transactions { get; set; }
         public ICollection<BookingNotification> Notifications { get; set; }
         public TopUpTransaction TopUpTransaction { get; set; }
+        public Feedback Feedback { get; set; }
+
     }
 }
