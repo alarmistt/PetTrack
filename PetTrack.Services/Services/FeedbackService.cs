@@ -21,22 +21,15 @@ namespace PetTrack.Services.Services
         }
         public async Task<FeedbackResponse> CreateFeedbackAsync(string userId, FeedbackCreateRequest request)
         {
-            var booking = await _unitOfWork.GetRepository<Booking>().Entities
-                .Include(b => b.User)
-                .FirstOrDefaultAsync(b => b.Id == request.BookingId);
+            if (request.Comment == null)
+                throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstants.INVALID_INPUT, "Comment must be between 10 and 500 characters");
 
-            if (booking.UserId != userId)
-                throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND,"You can only feedback your own booking");
-
-            if (booking.Status != BookingStatus.Completed.ToString())
-                throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "You can only feedback your own booking");
-
-            if (booking.Feedback != null)
-                throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "You can only feedback your own booking");
+            var user = await _unitOfWork.GetRepository<User>().Entities
+                .FirstOrDefaultAsync(u => u.Id == userId) ?? 
+                throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstants.NOT_FOUND, "User not found");
 
             var feedback = new Feedback
             {
-                BookingId = booking.Id,
                 UserId = userId,
                 Comment = request.Comment,
             };
@@ -51,7 +44,6 @@ namespace PetTrack.Services.Services
         {
             var feedbacks = await _unitOfWork.GetRepository<Feedback>().Entities
                 .Include(f => f.User)
-                .Include(f => f.Booking)
                 .ToListAsync();
 
             if (feedbacks == null || !feedbacks.Any())

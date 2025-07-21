@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PetTrack.Repositories.Base;
@@ -11,9 +12,11 @@ using PetTrack.Repositories.Base;
 namespace PetTrack.Repositories.Migrations
 {
     [DbContext(typeof(PetTrackDbContext))]
-    partial class PetTrackDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250721144317_changeFeedback")]
+    partial class changeFeedback
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
