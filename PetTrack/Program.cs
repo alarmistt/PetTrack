@@ -29,6 +29,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost3000",
         policy => policy.WithOrigins("https://deployexe.vercel.app")
+        .WithOrigins("http://localhost:3000")
                         .AllowAnyMethod()
                         .AllowAnyHeader());
 });
