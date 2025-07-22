@@ -91,12 +91,12 @@ namespace PetTrack.Services.Services
         {
             var query = _unitOfWork.GetRepository<TopUpTransaction>().Entities.AsQueryable();
 
-            if (string.IsNullOrEmpty(userId))
+            if (!string.IsNullOrEmpty(userId))
             {
-                userId = _userContextService.GetUserId() ?? throw new ArgumentException("User not found", nameof(_userContextService));
+                query = query.Where(t => t.UserId == userId);
             }
             
-            query = query.Where(t => t.UserId == userId);
+  
 
             if (!string.IsNullOrEmpty(status))
             {
