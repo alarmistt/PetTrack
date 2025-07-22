@@ -6,6 +6,7 @@ namespace PetTrack.ModelViews.TopUpModels
     public class TopUpResponse
     {
         public string Id { get; set; }
+        public UserResponse User { get; set; }
         public DateTimeOffset CreatedTime { get; set; }
         public string UserId { get; set; }
         public decimal Amount { get; set; }

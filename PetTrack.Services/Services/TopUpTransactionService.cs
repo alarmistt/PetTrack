@@ -89,7 +89,7 @@ namespace PetTrack.Services.Services
         }
         public async Task<PaginatedList<TopUpResponse>> GetTopUpTransaction(int pageIndex, int pageSize, string? userId = null, string? status = null)
         {
-            var query = _unitOfWork.GetRepository<TopUpTransaction>().Entities.AsQueryable();
+            var query = _unitOfWork.GetRepository<TopUpTransaction>().Entities.Include(x=> x.User).AsQueryable();
 
             if (!string.IsNullOrEmpty(userId))
             {
