@@ -51,7 +51,7 @@ namespace PetTrack.Services.Services
             {
                 throw new ArgumentException("Booking not found");
             }
-            booking.DeletedTime = CoreHelper.SystemTimeNow;
+            booking.DeletedTime = DateTimeOffset.UtcNow;
             await _unitOfWork.GetRepository<Booking>().UpdateAsync(booking);
             await _unitOfWork.GetRepository<Booking>().SaveAsync();
         }
