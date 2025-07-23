@@ -187,7 +187,7 @@ namespace PetTrack.DI
             {
                 options.AddPolicy("CorsPolicy", builder =>
                 {
-                    builder.WithOrigins("http://10.0.2.2:7276", "http://127.0.0.1:51568", "http://127.0.0.1:55464/") // origin: builder.WithOrigins(*)
+                    builder.WithOrigins("http://10.0.2.2:7276", "http://127.0.0.1:51568", "http://127.0.0.1:55464") // origin: builder.WithOrigins(*)
                            .AllowAnyHeader()
                            .AllowAnyMethod()
                            .AllowCredentials(); // Bắt buộc nếu dùng token/cookie
